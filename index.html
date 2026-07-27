@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSAM Academy of Music | Elite Music Education</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-music"></i>DSAM<span>.</span></div>
+
+        <nav class="desktop-nav">
+            <a href="#" class="active">Home</a>
+            <a href="#programs">Programs</a>
+            <a href="#estimator">Tuition Calculator</a>
+            <a href="#contact">Contact</a>
+            <button class="nav-btn" type="button" data-scroll="#contact">Enrol Today</button>
+        </nav>
+
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <nav class="mobile-nav" id="mobileNav" aria-hidden="true">
+        <button class="mobile-nav-close" id="menuClose" type="button" aria-label="Close menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <a href="#" data-close-menu>Home</a>
+        <a href="#programs" data-close-menu>Programs</a>
+        <a href="#estimator" data-close-menu>Tuition Calculator</a>
+        <a href="#contact" data-close-menu>Contact</a>
+        <button class="nav-btn" type="button" data-scroll="#contact" data-close-menu>Enrol Today</button>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="tagline">
+                    <i class="fa-solid fa-star"></i> Creative Artistry Redefined
+                </div>
+                <h1>Where Passion Meets <span>Mastery</span></h1>
+                <p>DSAM Academy of Music offers a bespoke educational experience. From foundational metrics to elite technical performance across all instrumentation and expert vocal design.</p>
+                <div class="cta-group">
+                    <a href="#programs" class="btn-primary">Explore Academy Tracks</a>
+                    <a href="#estimator" class="btn-secondary">View Tuition Scale</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-wrapper" id="programs">
+            <div class="section-header">
+                <h2>Elite Training Modules</h2>
+                <p>Curated curriculums designed to transition passionate students into world-class performers and technical masters.</p>
+            </div>
+
+            <div class="tab-container">
+                <button class="tab-btn active" data-filter="all" type="button">All Classes</button>
+                <button class="tab-btn" data-filter="instrumental" type="button">Instrumental</button>
+                <button class="tab-btn" data-filter="vocal" type="button">Vocal Engineering</button>
+            </div>
+
+            <div class="grid-display">
+                <div class="course-card" data-category="vocal">
+                    <div class="card-img-holder">
+                        <span class="card-badge">Vocal Track</span>
+                        <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=85" alt="Vocal student recording in a music studio">
+                    </div>
+                    <div class="card-body">
+                        <h3>Masterclass Vocal Coaching</h3>
+                        <p>Advanced architectural vocal mechanics focusing on breath design, frequency placement, modern range modulation, and live performance control.</p>
+                        <div class="card-meta">
+                            <div class="meta-item"><i class="fa-regular fa-clock"></i> 4-12 Months</div>
+                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> Beginner to Pro</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card" data-category="instrumental">
+                    <div class="card-img-holder">
+                        <span class="card-badge">Instrumental</span>
+                        <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600" alt="Piano Studio">
+                    </div>
+                    <div class="card-body">
+                        <h3>Grand Piano & Keyboard Symphony</h3>
+                        <p>Immersive mastery of harmonic design, site orchestration, classical composition foundations, and dynamic modern jazz improvisation styles.</p>
+                        <div class="card-meta">
+                            <div class="meta-item"><i class="fa-regular fa-clock"></i> 6-12 Months</div>
+                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> All Skill Levels</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="course-card" data-category="instrumental">
+                    <div class="card-img-holder">
+                        <span class="card-badge">Instrumental</span>
+                        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=600" alt="Guitar Class">
+                    </div>
+                    <div class="card-body">
+                        <h3>Strings & Percussion Architecture</h3>
+                        <p>Precision instruction across modern acoustic/electric guitar, bass configurations, complex rhythmic pattern setups, and full scale acoustic percussion.</p>
+                        <div class="card-meta">
+                            <div class="meta-item"><i class="fa-regular fa-clock"></i> 3-6 Months</div>
+                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> Personalized</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="calculator-section" id="estimator">
+            <div class="section-header">
+                <h2>Configure Your Track</h2>
+                <p>Adjust the real-time dynamic slider interface below to calculate custom tailored investment costs for tuition programs at DSAM.</p>
+            </div>
+
+            <div class="calc-box">
+                <div class="calc-inputs">
+                    <div class="form-group">
+                        <label>Weekly Class Duration <span class="calc-value-display" id="hourLabel">2 Hours</span></label>
+                        <input type="range" min="1" max="8" value="2" class="custom-slider" id="hourSlider">
+                    </div>
+                    <div class="form-group">
+                        <label>Planned Enrollment Term <span class="calc-value-display" id="monthLabel">3 Months</span></label>
+                        <input type="range" min="1" max="12" value="3" class="custom-slider" id="monthSlider">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="margin-bottom: 15px;">Include Private Studio Masterclasses?</label>
+                        <div style="display: flex; gap: 15px;">
+                            <button class="tab-btn active" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsYes" type="button">Yes</button>
+                            <button class="tab-btn" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsNo" type="button">No</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="calc-outputs">
+                    <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">Estimated Tuition (Starter Pricing)</p>
+                    <div class="price-display">₦<span id="totalPrice">145,000</span></div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; max-width: 250px;">A planning estimate based on DSAM starter pricing. Final tuition is confirmed before payment.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section" id="contact">
+            <div class="contact-grid">
+                <div>
+                    <h2 class="info-title">Begin Your Elite Musical Journey</h2>
+                    <p class="info-desc">Reach out to our registrar council. Secure personalized studio placements, book customized consultations, or set up physical auditions.</p>
+
+                    <div class="contact-item">
+                        <div class="icon-circle"><i class="fa-solid fa-location-dot"></i></div>
+                        <div>
+                            <h4 style="font-weight:600">Main Campus Headquarters</h4>
+                            <p style="color: var(--text-secondary); font-size:0.9rem;" data-academy-address>Lekki, Lagos, Nigeria</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="icon-circle"><i class="fa-solid fa-envelope"></i></div>
+                        <div>
+                            <h4 style="font-weight:600">Registrar Communications</h4>
+                            <p style="color: var(--text-secondary); font-size:0.9rem;" data-academy-email>admissions@dsamacademy.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <form class="premium-form" id="enrollmentForm">
+                        <div class="form-row">
+                            <input type="text" class="input-style" name="firstName" placeholder="First Name" required>
+                            <input type="text" class="input-style" name="lastName" placeholder="Last Name" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="email" class="input-style" name="email" placeholder="Email Address" required>
+                            <input type="tel" class="input-style" name="phone" placeholder="Phone Number">
+                        </div>
+                        <div class="form-row">
+                            <select class="input-style" name="ageGroup" required>
+                                <option value="" disabled selected>Student Age Group...</option>
+                                <option value="child">Child (under 13)</option>
+                                <option value="teen">Teen (13–17)</option>
+                                <option value="adult">Adult (18+)</option>
+                            </select>
+                            <select class="input-style" name="lessonFormat" required>
+                                <option value="" disabled selected>Preferred Lesson Format...</option>
+                                <option value="in-person">In-person lessons</option>
+                                <option value="online">Online lessons</option>
+                                <option value="either">Either option</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <select class="input-style" name="track" style="background: rgba(7,7,10,0.9);" required>
+                                <option value="">Select Primary Study Track...</option>
+                                <option value="vocals">Vocal Engineering Track</option>
+                                <option value="piano">Grand Piano Track</option>
+                                <option value="instruments">Strings & Percussion Track</option>
+                            </select>
+                        </div>
+                        <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+                        <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%; border-radius: 12px; padding: 18px;">Submit Formal Enrollment Application</button>
+                        <p class="payment-note">After application review, DSAM will send a secure payment link. Live payment is not enabled until official pricing is confirmed.</p>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 DSAM Academy of Music. Constructed via Elite Engineering Demo Frameworks.</p>
+        <div class="social-row">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+    </footer>
+
+    <script src="./js/site-config.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
