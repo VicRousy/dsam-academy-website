@@ -7,6 +7,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve('index.html'),
+        auth: resolve('auth.html'),
+      },
+    },
   },
   plugins: [{
     name: 'copy-browser-scripts',
