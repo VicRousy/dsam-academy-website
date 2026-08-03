@@ -118,6 +118,11 @@ const submitBtn = document.getElementById('submitBtn');
 enrollmentForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    if (window.handleEnrollment) {
+        window.handleEnrollment();
+        return;
+    }
+
     formStatus.textContent = '';
     formStatus.className = 'form-status';
     submitBtn.disabled = true;

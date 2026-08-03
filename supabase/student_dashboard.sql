@@ -1,0 +1,6 @@
+create table if not exists public.courses (id uuid primary key default gen_random_uuid(), title text not null);
+create table if not exists public.enrollments (id uuid primary key default gen_random_uuid(), student_id uuid references auth.users(id) on delete cascade not null, course_id uuid references public.courses(id), status text not null default 'pending');
+create table if not exists public.payments (id uuid primary key default gen_random_uuid(), student_id uuid references auth.users(id) on delete cascade not null, amount_ngn numeric not null, status text not null default 'pending', created_at timestamptz default now());
+create table if not exists public.lesson_sessions (id uuid primary key default gen_random_uuid(), student_id uuid references auth.users(id) on delete cascade not null, starts_at timestamptz not null, instructor text, location text);
+alter table public.enrollments enable row level security; alter table public.payments enable row level security; alter table public.lesson_sessions enable row level security;
+create policy "students read own enrolments" on public.enrollments for select using (auth.uid()=student_id); create policy "students read own payments" on public.payments for select using (auth.uid()=student_id); create policy "students read own lessons" on public.lesson_sessions for select using (auth.uid()=student_id);

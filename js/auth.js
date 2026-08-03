@@ -28,11 +28,7 @@ if (!url || !key) {
   showStatus('Student accounts are being set up. Please check back shortly.', true);
 } else {
   const supabase = createClient(url, key);
-  const showMember = (session) => {
-    authCard.hidden = true;
-    signedInCard.hidden = false;
-    document.querySelector('#memberEmail').textContent = session.user.email;
-  };
+  const showMember = () => { window.location.replace('./dashboard.html'); };
 
   const { data: { session } } = await supabase.auth.getSession();
   if (session) showMember(session);

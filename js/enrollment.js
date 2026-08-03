@@ -1,0 +1,33 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+const courseNames = { vocals: 'Masterclass Vocal Coaching', piano: 'Grand Piano & Keyboard Symphony', instruments: 'Strings & Percussion Architecture' };
+
+window.handleEnrollment = async () => {
+  const form = document.querySelector('#enrollmentForm');
+  const status = document.querySelector('#formStatus');
+  const button = document.querySelector('#submitBtn');
+  const payload = Object.fromEntries(new FormData(form).entries());
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    status.textContent = 'Please sign in or create a Student Portal account before enrolling.';
+    status.className = 'form-status error';
+    return;
+  }
+  button.disabled = true;
+  button.textContent = 'Saving your enrolment…';
+  const { data: course, error: courseError } = await supabase.from('courses').select('id').eq('title', courseNames[payload.track]).single();
+  if (courseError) throw courseError;
+  const { error } = await supabase.from('enrollments').insert({ student_id: user.id, course_id: course.id, status: 'pending' });
+  if (error) {
+    status.textContent = error.message;
+    status.className = 'form-status error';
+  } else {
+    fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    status.textContent = 'Enrolment received. You can track it in your Student Portal.';
+    status.className = 'form-status success';
+    form.reset();
+  }
+  button.disabled = false;
+  button.textContent = 'Submit Formal Enrollment Application';
+};
