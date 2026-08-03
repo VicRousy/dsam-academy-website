@@ -459,3 +459,21 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
     .portal-signout { padding: 9px 11px; font-size: .85rem; }
     .dashboard-card { padding: 18px; }
 }
+
+/* Official logo needs a light surface because its wordmark is intentionally dark. */
+.brand-logo {
+    padding: 8px 12px;
+    border: 1px solid rgba(243, 208, 120, .55);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fffdf3 0%, #ead7a5 100%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .34), 0 0 22px rgba(229, 169, 59, .14);
+}
+.brand-logo img {
+    width: 280px;
+    max-width: 40vw;
+    filter: contrast(1.14) saturate(1.08);
+}
+@media (max-width: 768px) {
+    .brand-logo { padding: 6px 9px; border-radius: 9px; }
+    .brand-logo img { width: 205px; max-width: 60vw; }
+}
