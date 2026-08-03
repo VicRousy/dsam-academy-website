@@ -1,4 +1,4 @@
--- First, both staff members must create/sign in to their DSAM'S account once.
+-- First, the owner must create/sign in to their DSAM'S account once.
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
@@ -48,5 +48,5 @@ create policy "admins read all enrolments" on public.enrollments for select usin
 create policy "admins update enrolments" on public.enrollments for update using (public.is_admin()) with check (public.is_admin());
 
 insert into public.user_roles (user_id, role)
-select id, 'admin' from auth.users where lower(email) in ('dsamacademyofmusic@gmail.com', 'dsamdsam32@gmail.com')
+select id, 'admin' from auth.users where lower(email) = 'dsamacademyofmusic@gmail.com'
 on conflict (user_id) do update set role = excluded.role;
