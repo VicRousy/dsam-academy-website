@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || 'DSAM Academy <onboarding@resend.dev>';
+  const fromEmail = process.env.FROM_EMAIL || "DSAM'S Academy <onboarding@resend.dev>";
   const trackLabel = TRACK_LABELS[track] || track;
   const fullName = `${firstName.trim()} ${lastName.trim()}`;
 

@@ -18,7 +18,7 @@ function showStatus(message, error = false) {
 
 function setMode() {
   emailButton.textContent = createMode ? 'Create Account' : 'Sign In';
-  modeButton.textContent = createMode ? 'Already have an account? Sign in' : 'New to DSAM? Create an account';
+  modeButton.textContent = createMode ? 'Already have an account? Sign in' : "New to DSAM'S? Create an account";
   document.querySelector('#password').autocomplete = createMode ? 'new-password' : 'current-password';
   showStatus('');
 }
@@ -49,7 +49,7 @@ if (!url || !key) {
       : await supabase.auth.signInWithPassword({ email, password });
     emailButton.disabled = false;
     if (result.error) return showStatus(result.error.message, true);
-    if (createMode) return showStatus('Check your email to confirm your new DSAM account.');
+    if (createMode) return showStatus("Check your email to confirm your new DSAM'S account.");
     showMember(result.data.session);
   });
 

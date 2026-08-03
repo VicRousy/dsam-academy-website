@@ -24,7 +24,7 @@ if (enrolment) {
   document.querySelector('#courseName').textContent = enrolment.courses.title;
   document.querySelector('#courseDetail').textContent = enrolment.status === 'active'
     ? 'Your enrolment is active.'
-    : 'Your application is pending DSAM approval.';
+    : "Your application is pending DSAM'S approval.";
 }
 
 const { data: lessons } = await supabase
@@ -39,8 +39,8 @@ const upcomingLessons = lessons || [];
 if (upcomingLessons.length) {
   const next = new Date(upcomingLessons[0].starts_at);
   document.querySelector('#lessonDate').textContent = next.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-  document.querySelector('#lessonDetail').textContent = `${next.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${upcomingLessons[0].location || 'DSAM Academy'}`;
-  document.querySelector('#scheduleList').innerHTML = upcomingLessons.map((lesson) => `<p><b>${new Date(lesson.starts_at).toLocaleDateString()}</b> · ${new Date(lesson.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${lesson.instructor || 'DSAM Tutor'}</p>`).join('');
+  document.querySelector('#lessonDetail').textContent = `${next.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${upcomingLessons[0].location || "DSAM'S Academy"}`;
+  document.querySelector('#scheduleList').innerHTML = upcomingLessons.map((lesson) => `<p><b>${new Date(lesson.starts_at).toLocaleDateString()}</b> · ${new Date(lesson.starts_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · ${lesson.instructor || "DSAM'S Tutor"}</p>`).join('');
 }
 
 const { data: payment } = await supabase
