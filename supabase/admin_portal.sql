@@ -7,7 +7,7 @@ create table if not exists public.profiles (
 );
 create table if not exists public.user_roles (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  role text not null check (role in ('admin'))
+  role text not null check (role in ('admin', 'staff'))
 );
 alter table public.profiles enable row level security;
 alter table public.user_roles enable row level security;
@@ -34,19 +34,27 @@ returns boolean language sql stable security definer set search_path = public as
   select exists (select 1 from public.user_roles where user_id = auth.uid() and role = 'admin');
 $$;
 grant execute on function public.is_admin() to authenticated;
+create or replace function public.is_staff()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.user_roles where user_id = auth.uid() and role in ('admin', 'staff'));
+$$;
+grant execute on function public.is_staff() to authenticated;
 grant select on public.profiles, public.user_roles to authenticated;
 
 drop policy if exists "users read own profile" on public.profiles;
 drop policy if exists "admins read profiles" on public.profiles;
 create policy "users read own profile" on public.profiles for select using (auth.uid() = id);
-create policy "admins read profiles" on public.profiles for select using (public.is_admin());
+create policy "admins read profiles" on public.profiles for select using (public.is_staff());
 drop policy if exists "users read own role" on public.user_roles;
 create policy "users read own role" on public.user_roles for select using (auth.uid() = user_id);
 drop policy if exists "admins read all enrolments" on public.enrollments;
 drop policy if exists "admins update enrolments" on public.enrollments;
-create policy "admins read all enrolments" on public.enrollments for select using (public.is_admin());
+create policy "admins read all enrolments" on public.enrollments for select using (public.is_staff());
 create policy "admins update enrolments" on public.enrollments for update using (public.is_admin()) with check (public.is_admin());
 
+alter table public.user_roles drop constraint if exists user_roles_role_check;
+alter table public.user_roles add constraint user_roles_role_check check (role in ('admin', 'staff'));
 insert into public.user_roles (user_id, role)
-select id, 'admin' from auth.users where lower(email) = 'dsamacademyofmusic@gmail.com'
+select id, case when lower(email) = 'dsamacademyofmusic@gmail.com' then 'admin' else 'staff' end
+from auth.users where lower(email) in ('dsamacademyofmusic@gmail.com', 'dsamdsam32@gmail.com')
 on conflict (user_id) do update set role = excluded.role;
