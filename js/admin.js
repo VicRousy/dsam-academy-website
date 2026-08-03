@@ -6,7 +6,7 @@ const status = document.querySelector('#adminStatus');
 const list = document.querySelector('#applicationList');
 const { data: { session } } = await supabase.auth.getSession();
 
-if (!session) window.location.replace('./auth.html');
+if (!session) window.location.replace('./admin-login.html');
 identity.textContent = session.user.email;
 
 const { data: role } = await supabase.from('user_roles').select('role').eq('user_id', session.user.id).maybeSingle();

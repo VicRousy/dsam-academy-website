@@ -13,6 +13,7 @@ export default defineConfig({
         auth: resolve('auth.html'),
         dashboard: resolve('dashboard.html'),
         admin: resolve('admin.html'),
+        adminLogin: resolve('admin-login.html'),
       },
     },
   },
