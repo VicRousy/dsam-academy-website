@@ -327,6 +327,12 @@ header {
 .card-img-holder { position: relative; height: 240px; overflow: hidden; }
 .card-img-holder img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
 .course-card:hover .card-img-holder img { transform: scale(1.08); }
+.programme-list { margin-top: 34px; padding: 28px; border: 1px solid var(--border-glass); border-radius: 18px; background: var(--bg-surface); }
+.programme-list h3 { margin-bottom: 18px; font-size: 1.35rem; }
+.programme-list-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.programme-list-grid p { margin: 0; padding: 15px; border: 1px solid var(--border-glass); border-radius: 10px; background: rgba(255,255,255,.02); line-height: 1.35; }
+.programme-list-grid b { display: block; color: var(--text-primary); font-size: .9rem; }
+.programme-list-grid span { display: block; margin-top: 6px; color: var(--text-secondary); font-size: .78rem; }
 
 .card-badge {
     position: absolute; top: 20px; left: 20px;
@@ -439,6 +445,7 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
     .hero h1 { font-size: 2.5rem; }
     .section-wrapper { padding: 80px 4%; }
     footer { flex-direction: column; text-align: center; }
+    .programme-list-grid { grid-template-columns: 1fr; }
 }
 
 /* Student dashboard: readable on narrow screens and split-window testing. */

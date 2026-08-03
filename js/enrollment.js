@@ -1,11 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-const courseNames = {
-  vocals: 'Masterclass Vocal Coaching',
-  piano: 'Grand Piano & Keyboard Symphony',
-  instruments: 'Strings & Percussion Architecture',
-};
 
 window.handleEnrollment = async () => {
   const form = document.querySelector('#enrollmentForm');
@@ -27,7 +22,7 @@ window.handleEnrollment = async () => {
     const { data: course, error: courseError } = await supabase
       .from('courses')
       .select('id')
-      .eq('title', courseNames[payload.track])
+      .eq('title', payload.track)
       .single();
     if (courseError) throw courseError;
 
