@@ -2,10 +2,10 @@
 window.DSAM_CONFIG = {
   academy: {
   name: 'DSAM Academy of Music',
-  address: 'Lekki, Lagos, Nigeria',
-  email: 'admissions@dsamacademy.com',
-  phone: '+234 800 000 0000',
-  whatsapp: '2348000000000',
+  address: '13, Temidayo Street, New Era Estate, Parafa, Ikorodu, Lagos State',
+  email: '',
+  phone: '080100698586 / 08058102733',
+  whatsapp: '080100698586',
   },
 
 // STARTER PRICING — displayed as an estimate only. Do not connect live payments
