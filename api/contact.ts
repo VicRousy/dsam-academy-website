@@ -16,7 +16,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const enrollmentEmail = process.env.ENROLLMENT_EMAIL;
 
   if (!apiKey || !enrollmentEmail) {
-    return res.status(500).json({ error: 'Email service is not configured yet.' });
+    // The enrolment itself is already saved in Supabase. During setup, email
+    // notifications are optional, so do not make a successful application
+    // look like a failure just because Resend is not configured yet.
+    return res.status(202).json({ success: true, notification: 'not_configured' });
   }
 
   const { firstName, lastName, email, phone, track, ageGroup, lessonFormat } = req.body ?? {};
