@@ -3,12 +3,12 @@
     --bg-dark: #07070a;
     --bg-surface: #12121a;
     --bg-surface-glass: rgba(18, 18, 26, 0.7);
-    --accent-gold: #169bd5;
-    --accent-gold-glow: rgba(22, 155, 213, 0.3);
+    --accent-gold: #e5a93b;
+    --accent-gold-glow: rgba(229, 169, 59, 0.3);
     --text-primary: #f4f4f6;
     --text-secondary: #9494a1;
     --border-glass: rgba(255, 255, 255, 0.05);
-    --gradient-gold: linear-gradient(135deg, #9fe4ff 0%, #169bd5 100%);
+    --gradient-gold: linear-gradient(135deg, #f3d078 0%, #e5a93b 100%);
 }
 
 * {

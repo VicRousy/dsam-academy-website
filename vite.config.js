@@ -12,6 +12,7 @@ export default defineConfig({
         main: resolve('index.html'),
         auth: resolve('auth.html'),
         dashboard: resolve('dashboard.html'),
+        admin: resolve('admin.html'),
       },
     },
   },
