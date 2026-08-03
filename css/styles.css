@@ -436,3 +436,22 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
     .section-wrapper { padding: 80px 4%; }
     footer { flex-direction: column; text-align: center; }
 }
+
+/* Student dashboard: readable on narrow screens and split-window testing. */
+.dashboard-card h2 { font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.25; overflow-wrap: anywhere; }
+.dashboard-card p:not(.card-label) { line-height: 1.65; }
+@media (max-width: 720px) {
+    .portal-shell { padding: 24px 16px 56px; }
+    .portal-header { padding-bottom: 18px; }
+    .portal-header .auth-logo { font-size: 1.45rem; }
+    .portal-welcome { padding: 38px 0 24px; }
+    .dashboard-grid { grid-template-columns: 1fr; gap: 14px; }
+    .dashboard-card { padding: 22px; }
+    .schedule-card { display: block; }
+    .schedule-list { margin-top: 22px; }
+}
+@media (max-width: 380px) {
+    .portal-shell { padding-inline: 12px; }
+    .portal-signout { padding: 9px 11px; font-size: .85rem; }
+    .dashboard-card { padding: 18px; }
+}
