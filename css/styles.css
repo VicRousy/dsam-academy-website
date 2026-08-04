@@ -70,7 +70,17 @@ header {
 .brand-logo { display: inline-flex; align-items: center; line-height: 0; text-decoration: none; }
 .brand-logo img { display: block; width: 240px; max-width: 38vw; height: auto; }
 
-.desktop-nav { display: flex; align-items: center; gap: 35px; }
+.desktop-nav { display: flex; align-items: center; gap: 18px; }
+.role-login {
+    border: 1px solid var(--border-glass);
+    border-radius: 9px;
+    color: var(--text-primary) !important;
+    font-size: 0.82rem !important;
+    padding: 9px 11px;
+    white-space: nowrap;
+}
+.role-login:hover, .role-login:focus-visible { border-color: var(--accent-gold); color: var(--accent-gold) !important; }
+.role-admin { border-color: rgba(229, 169, 59, 0.7); }
 .desktop-nav a {
     text-decoration: none;
     color: var(--text-secondary);
@@ -446,6 +456,11 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
     .section-wrapper { padding: 80px 4%; }
     footer { flex-direction: column; text-align: center; }
     .programme-list-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1150px) and (min-width: 769px) {
+    .desktop-nav { display: none; }
+    .menu-toggle { display: flex; align-items: center; justify-content: center; }
 }
 
 /* Student dashboard: readable on narrow screens and split-window testing. */
