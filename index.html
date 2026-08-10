@@ -16,14 +16,19 @@
     <header>
         <a class="brand-logo" href="#" aria-label="DSAM'S Academy of Music home"><img src="./assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
 
-        <nav class="desktop-nav">
-            <a href="#" class="active">Home</a>
-            <a href="#programs">Programs</a>
-            <a href="#estimator">Tuition Calculator</a>
-            <a href="#contact">Contact</a>
-            <a href="./auth.html" class="role-login role-student">Student Login</a>
-            <a href="./staff-login.html" class="role-login role-staff">Staff Login</a>
-            <a href="./admin-login.html" class="role-login role-admin">Admin Login</a>
+        <nav class="desktop-nav" aria-label="Main navigation">
+            <div class="nav-group public-nav">
+                <a href="#" class="active">Home</a>
+                <a href="#programs">Programs</a>
+                <a href="#estimator">Tuition Calculator</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="nav-group portal-nav" aria-label="Portal access">
+                <span class="portal-label">Portals</span>
+                <a href="./auth.html" class="role-login role-student">Student</a>
+                <a href="./staff-login.html" class="role-login role-staff">Staff</a>
+                <a href="./admin-login.html" class="role-login role-admin">Admin</a>
+            </div>
             <button class="nav-btn" type="button" data-scroll="#contact">Enrol Today</button>
         </nav>
 
@@ -41,9 +46,10 @@
         <a href="#programs" data-close-menu>Programs</a>
         <a href="#estimator" data-close-menu>Tuition Calculator</a>
         <a href="#contact" data-close-menu>Contact</a>
-        <a href="./auth.html" class="role-login role-student" data-close-menu>Student Login</a>
-        <a href="./staff-login.html" class="role-login role-staff" data-close-menu>Staff Login</a>
-        <a href="./admin-login.html" class="role-login role-admin" data-close-menu>Admin Login</a>
+        <span class="mobile-nav-section-label">Portals</span>
+        <a href="./auth.html" class="role-login role-student" data-close-menu>Student Portal</a>
+        <a href="./staff-login.html" class="role-login role-staff" data-close-menu>Staff Portal</a>
+        <a href="./admin-login.html" class="role-login role-admin" data-close-menu>Admin Portal</a>
         <button class="nav-btn" type="button" data-scroll="#contact" data-close-menu>Enrol Today</button>
     </nav>
 

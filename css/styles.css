@@ -70,7 +70,17 @@ header {
 .brand-logo { display: inline-flex; align-items: center; line-height: 0; text-decoration: none; }
 .brand-logo img { display: block; width: 240px; max-width: 38vw; height: auto; }
 
-.desktop-nav { display: flex; align-items: center; gap: 30px; margin-left: auto; }
+.desktop-nav { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav-group { display: flex; align-items: center; gap: 26px; }
+.portal-nav { padding-left: 28px; border-left: 1px solid var(--border-glass); }
+.portal-label,
+.mobile-nav-section-label {
+    color: var(--accent-gold);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
 .desktop-nav .role-login {
     color: var(--text-secondary);
     font-size: 0.95rem;
@@ -183,6 +193,7 @@ header {
     transition: color 0.3s;
 }
 .mobile-nav a:hover { color: var(--accent-gold); }
+.mobile-nav-section-label { margin-top: 8px; }
 
 .mobile-nav .nav-btn {
     margin-top: 10px;
