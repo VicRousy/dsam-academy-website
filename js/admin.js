@@ -6,13 +6,14 @@ const status = document.querySelector('#adminStatus');
 const list = document.querySelector('#applicationList');
 const { data: { session } } = await supabase.auth.getSession();
 
-if (!session) window.location.replace('./admin-login.html');
+if (!session) {
+  window.location.replace('./admin-login.html');
+} else {
 identity.textContent = session.user.email;
 
 const { data: role } = await supabase.from('user_roles').select('role').eq('user_id', session.user.id).maybeSingle();
 if (!['admin', 'staff'].includes(role?.role)) {
-  status.textContent = 'This account does not have admissions-admin access.';
-  status.className = 'admin-status error';
+  window.location.replace('./dashboard.html');
 } else {
   const { data: applications, error } = await supabase.from('enrollments').select('id,student_id,status,created_at,courses(title)').order('created_at', { ascending: false });
   if (error) {
@@ -39,4 +40,5 @@ if (!['admin', 'staff'].includes(role?.role)) {
       window.location.reload();
     }));
   }
+}
 }

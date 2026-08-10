@@ -10,8 +10,19 @@ const showStatus = (message, error = false) => {
   status.className = error ? 'auth-status error' : 'auth-status';
 };
 
+const routeSignedInUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { data: role } = await supabase.from('user_roles').select('role').eq('user_id', user.id).maybeSingle();
+  if (role?.role === 'admin' || role?.role === 'staff') {
+    window.location.replace('./admin.html');
+    return;
+  }
+  window.location.replace('./dashboard.html');
+};
+
 const { data: { session } } = await supabase.auth.getSession();
-if (session) window.location.replace('./admin.html');
+if (session) await routeSignedInUser();
 
 googleButton.addEventListener('click', async () => {
   googleButton.disabled = true;
@@ -31,5 +42,5 @@ document.querySelector('#adminLoginForm').addEventListener('submit', async (even
   });
   emailButton.disabled = false;
   if (error) return showStatus(error.message, true);
-  window.location.replace('./admin.html');
+  await routeSignedInUser();
 });

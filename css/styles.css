@@ -70,9 +70,9 @@ header {
 .brand-logo { display: inline-flex; align-items: center; line-height: 0; text-decoration: none; }
 .brand-logo img { display: block; width: 240px; max-width: 38vw; height: auto; }
 
-.desktop-nav { display: flex; align-items: center; gap: 20px; margin-left: auto; }
-.nav-group { display: flex; align-items: center; gap: 18px; }
-.portal-nav { padding-left: 20px; border-left: 1px solid var(--border-glass); }
+.desktop-nav { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.nav-group { display: flex; align-items: center; gap: 14px; }
+.portal-nav { padding-left: 16px; border-left: 1px solid var(--border-glass); }
 .portal-label,
 .mobile-nav-section-label {
     color: var(--accent-gold);
