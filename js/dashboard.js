@@ -6,7 +6,6 @@ if (!session) window.location.replace('./auth.html');
 
 const user = session.user;
 document.querySelector('#studentName').textContent = `Welcome, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
-document.querySelector('#studentEmail').textContent = user.email;
 document.querySelector('#signOutButton').onclick = async () => {
   await supabase.auth.signOut();
   window.location.replace('./auth.html');

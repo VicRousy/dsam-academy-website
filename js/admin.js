@@ -1,20 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-const identity = document.querySelector('#adminIdentity');
 const status = document.querySelector('#adminStatus');
 const list = document.querySelector('#applicationList');
+const portalKicker = document.querySelector('#portalKicker');
+const portalTitle = document.querySelector('#portalTitle');
 const { data: { session } } = await supabase.auth.getSession();
 
 if (!session) {
   window.location.replace('./admin-login.html');
 } else {
-identity.textContent = session.user.email;
-
 const { data: role } = await supabase.from('user_roles').select('role').eq('user_id', session.user.id).maybeSingle();
 if (!['admin', 'staff'].includes(role?.role)) {
   window.location.replace('./dashboard.html');
 } else {
+  const isAdmin = role.role === 'admin';
+  portalKicker.textContent = isAdmin ? 'ADMIN PORTAL' : 'STAFF PORTAL';
+  portalTitle.textContent = isAdmin ? 'Manage applications' : 'View applications';
+  document.title = `${isAdmin ? 'Admin' : 'Staff'} Portal | DSAM'S Academy of Music`;
   const { data: applications, error } = await supabase.from('enrollments').select('id,student_id,status,created_at,courses(title)').order('created_at', { ascending: false });
   if (error) {
     status.textContent = error.message;
@@ -25,7 +28,6 @@ if (!['admin', 'staff'].includes(role?.role)) {
     const ids = applications.map((application) => application.student_id);
     const { data: profiles = [] } = await supabase.from('profiles').select('id,email,full_name').in('id', ids);
     const students = new Map(profiles.map((profile) => [profile.id, profile]));
-    const isAdmin = role.role === 'admin';
     list.innerHTML = applications.map((application) => {
       const student = students.get(application.student_id);
       const name = student?.full_name || student?.email || 'Student';
