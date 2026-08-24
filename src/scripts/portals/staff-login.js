@@ -15,11 +15,22 @@ const requestStaffAccess = async (user) => {
   if (request?.status === 'denied') return show('Your staff-access request was not approved. Please contact the academy owner.', true);
   if (request?.status === 'approved') return window.location.replace('./admin.html');
 
-  const { error } = await supabase.from('staff_access_requests').insert({
+  const { data: newRequest, error } = await supabase.from('staff_access_requests').insert({
     user_id: user.id,
     email: user.email,
-  });
+  }).select('id').single();
   if (error) return show(error.message, true);
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    fetch('/api/staff-access-request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ requestId: newRequest.id }),
+    }).catch(() => undefined);
+  }
   show('Your staff-access request has been sent to the DSAM owner for approval.');
 };
 

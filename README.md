@@ -20,3 +20,14 @@
 ## Create a production build
 
 Run `npm run build`.
+
+## Owner staff-request emails
+
+When a person requests Staff Portal access, the site can email the owner a secure review link. Set these Vercel environment variables when the owner is ready:
+
+- `RESEND_API_KEY` — kept secret; never add it to website code.
+- `FROM_EMAIL` — an address on the academy's verified domain.
+- `STAFF_REQUEST_RECIPIENT` — normally `dsamacademyofmusic@gmail.com`.
+- `APP_URL` — the final public website address.
+
+The email review button opens Admin Portal. The owner must still sign in before approving or denying the request.
