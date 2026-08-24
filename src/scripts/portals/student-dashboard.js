@@ -2,7 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 const { data: { session } } = await supabase.auth.getSession();
-if (!session) window.location.replace('./auth.html');
+if (!session) {
+  window.location.replace('./auth.html');
+} else {
 
 const user = session.user;
 document.querySelector('#studentName').textContent = `Welcome, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
@@ -52,4 +54,5 @@ const { data: payment } = await supabase
 if (payment) {
   document.querySelector('#paymentStatus').textContent = payment.status === 'paid' ? 'Paid' : 'Payment pending';
   document.querySelector('#paymentDetail').textContent = `Latest amount: ₦${Number(payment.amount_ngn).toLocaleString()}`;
+}
 }

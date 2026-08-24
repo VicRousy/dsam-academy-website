@@ -2,6 +2,27 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 const status = document.querySelector('#authStatus');
 const show = (message, error = false) => { status.textContent = message; status.className = error ? 'auth-status error' : 'auth-status'; };
+
+const requestStaffAccess = async (user) => {
+  const { data: request, error: requestError } = await supabase
+    .from('staff_access_requests')
+    .select('status')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (requestError) return show('Staff-access requests are not set up yet. Please contact the academy owner.', true);
+  if (request?.status === 'pending') return show('Your staff-access request is pending owner approval. You cannot access staff records yet.');
+  if (request?.status === 'denied') return show('Your staff-access request was not approved. Please contact the academy owner.', true);
+  if (request?.status === 'approved') return window.location.replace('./admin.html');
+
+  const { error } = await supabase.from('staff_access_requests').insert({
+    user_id: user.id,
+    email: user.email,
+  });
+  if (error) return show(error.message, true);
+  show('Your staff-access request has been sent to the DSAM owner for approval.');
+};
+
 const routeSignedInUser = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
@@ -10,7 +31,7 @@ const routeSignedInUser = async () => {
     window.location.replace('./admin.html');
     return;
   }
-  window.location.replace('./dashboard.html');
+  await requestStaffAccess(user);
 };
 
 const { data: { session } } = await supabase.auth.getSession();

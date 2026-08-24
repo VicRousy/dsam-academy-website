@@ -9,12 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./src/styles/styles.css">
 </head>
 <body>
 
     <header>
-        <a class="brand-logo" href="#" aria-label="DSAM'S Academy of Music home"><img src="./assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
+        <a class="brand-logo" href="#" aria-label="DSAM'S Academy of Music home"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
 
         <nav class="desktop-nav" aria-label="Main navigation">
             <div class="nav-group public-nav">
@@ -231,6 +231,9 @@
 
                 <div>
                     <form class="premium-form" id="enrollmentForm">
+                        <div class="form-honeypot" aria-hidden="true">
+                            <label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                        </div>
                         <div class="form-row">
                             <input type="text" class="input-style" name="firstName" placeholder="First Name" required>
                             <input type="text" class="input-style" name="lastName" placeholder="Last Name" required>
@@ -291,8 +294,7 @@
         </div>
     </footer>
 
-    <script src="./js/site-config.js"></script>
-    <script src="./js/main.js"></script>
-    <script type="module" src="./js/enrollment.js"></script>
+    <script type="module" src="./src/scripts/site/main.js"></script>
+    <script type="module" src="./src/scripts/enrollment/enrollment.js"></script>
 </body>
 </html>

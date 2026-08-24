@@ -5,6 +5,8 @@ const status = document.querySelector('#adminStatus');
 const list = document.querySelector('#applicationList');
 const portalKicker = document.querySelector('#portalKicker');
 const portalTitle = document.querySelector('#portalTitle');
+const staffRequests = document.querySelector('#staffRequests');
+const staffRequestList = document.querySelector('#staffRequestList');
 const { data: { session } } = await supabase.auth.getSession();
 
 if (!session) {
@@ -18,6 +20,41 @@ if (!['admin', 'staff'].includes(role?.role)) {
   portalKicker.textContent = isAdmin ? 'ADMIN PORTAL' : 'STAFF PORTAL';
   portalTitle.textContent = isAdmin ? 'Manage applications' : 'View applications';
   document.title = `${isAdmin ? 'Admin' : 'Staff'} Portal | DSAM'S Academy of Music`;
+  const escapeHtml = (value) => String(value || '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+
+  const loadStaffRequests = async () => {
+    if (!isAdmin) return;
+    staffRequests.hidden = false;
+    const { data: requests = [], error: requestError } = await supabase
+      .from('staff_access_requests')
+      .select('id,email,requested_at')
+      .eq('status', 'pending')
+      .order('requested_at', { ascending: true });
+    if (requestError) {
+      staffRequestList.innerHTML = '<p class="admin-status error">Staff-access requests are not set up yet. Run the staff access SQL setup.</p>';
+      return;
+    }
+    if (!requests.length) {
+      staffRequestList.innerHTML = '<p class="staff-request-empty">No pending staff-access requests.</p>';
+      return;
+    }
+    staffRequestList.innerHTML = requests.map((request) => `<article class="staff-request-card"><div><h3>${escapeHtml(request.email)}</h3><p>Requested ${new Date(request.requested_at).toLocaleDateString()}</p></div><div class="application-actions"><button data-request-decision="approved" data-request-id="${request.id}">Approve</button><button data-request-decision="denied" data-request-id="${request.id}">Deny</button></div></article>`).join('');
+    staffRequestList.querySelectorAll('button[data-request-id]').forEach((button) => button.addEventListener('click', async () => {
+      button.disabled = true;
+      const { error: decisionError } = await supabase.rpc('decide_staff_access', {
+        request_id: Number(button.dataset.requestId),
+        decision: button.dataset.requestDecision,
+      });
+      if (decisionError) {
+        status.textContent = decisionError.message;
+        status.className = 'admin-status error';
+        button.disabled = false;
+        return;
+      }
+      await loadStaffRequests();
+    }));
+  };
+  await loadStaffRequests();
   const { data: applications, error } = await supabase.from('enrollments').select('id,student_id,status,created_at,courses(title)').order('created_at', { ascending: false });
   if (error) {
     status.textContent = error.message;

@@ -1,4 +1,4 @@
-const { academy, pricing } = window.DSAM_CONFIG;
+import { academy, pricing } from '../config/site-config.js';
 
 const currency = new Intl.NumberFormat('en-NG', { maximumFractionDigits: 0 });
 

@@ -1,10 +1,32 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Staff Login | DSAM'S Academy of Music</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles/styles.css">
 </head>
-<body class="auth-page"><main class="auth-shell"><a class="auth-logo brand-logo" href="./index.html"><img src="./assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a><section class="auth-card"><a class="auth-back" href="./index.html">← Back to academy</a><p class="auth-kicker">STAFF ACCESS</p><h1>Staff Login</h1><p class="auth-copy">For authorised DSAM'S staff. This workspace provides read-only admissions access.</p><button id="googleButton" class="google-button" type="button"><span>G</span> Continue with Google</button><div class="auth-divider"><span>or use staff email</span></div><form id="staffLoginForm"><label>Email Address<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" required></label><button id="emailButton" class="btn-primary auth-submit" type="submit">Sign In as Staff</button></form><p id="authStatus" class="auth-status" role="status" aria-live="polite"></p></section></main><script type="module" src="./js/staff-login.js"></script></body>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="auth-logo brand-logo" href="./index.html"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
+    <section class="auth-card">
+      <a class="auth-back" href="./index.html">← Back to academy</a>
+      <p class="auth-kicker">STAFF ACCESS</p>
+      <h1>Staff Login</h1>
+      <p class="auth-copy">Use your own Gmail. Your request is sent to the DSAM'S owner, who must approve access before you can view admissions.</p>
+      <button id="googleButton" class="google-button" type="button"><span>G</span> Continue with Google</button>
+      <div class="auth-divider"><span>or use staff email</span></div>
+      <form id="staffLoginForm">
+        <label>Email Address<input id="email" type="email" autocomplete="email" required></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
+        <button id="emailButton" class="btn-primary auth-submit" type="submit">Sign In as Staff</button>
+      </form>
+      <p id="authStatus" class="auth-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <script type="module" src="./src/scripts/portals/staff-login.js"></script>
+</body>
 </html>

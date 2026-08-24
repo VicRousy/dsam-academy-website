@@ -29,14 +29,21 @@ window.handleEnrollment = async () => {
     const { error } = await supabase
       .from('enrollments')
       .insert({ student_id: user.id, course_id: course.id, status: 'pending' });
+    if (error?.code === '23505') {
+      status.textContent = 'You already have an application for this programme. Please contact admissions if you need it reviewed.';
+      status.className = 'form-status error';
+      return;
+    }
     if (error) throw error;
 
-    fetch('/api/contact', {
+    const notificationResponse = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    status.textContent = 'Enrolment received. You can track it in your Student Portal.';
+    status.textContent = notificationResponse.ok
+      ? 'Enrolment received. You can track it in your Student Portal.'
+      : 'Enrolment received. Please contact admissions to confirm your application was received.';
     status.className = 'form-status success';
     form.reset();
   } catch (error) {
