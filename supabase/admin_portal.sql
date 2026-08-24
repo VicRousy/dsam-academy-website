@@ -54,7 +54,10 @@ create policy "admins update enrolments" on public.enrollments for update using 
 
 alter table public.user_roles drop constraint if exists user_roles_role_check;
 alter table public.user_roles add constraint user_roles_role_check check (role in ('admin', 'staff'));
+-- Only the official owner account is created as an Admin here.
+-- Staff use their own Gmail and request access through Staff Login.
 insert into public.user_roles (user_id, role)
-select id, case when lower(email) = 'dsamacademyofmusic@gmail.com' then 'admin' else 'staff' end
-from auth.users where lower(email) in ('dsamacademyofmusic@gmail.com', 'dsamdsam32@gmail.com')
+select id, 'admin'
+from auth.users
+where lower(email) = 'dsamacademyofmusic@gmail.com'
 on conflict (user_id) do update set role = excluded.role;

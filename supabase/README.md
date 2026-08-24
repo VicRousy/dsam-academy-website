@@ -22,7 +22,7 @@ Run the existing files in this order:
 5. `admin_portal.sql`
 6. `20260813_enrollment_hardening.sql`
 
-Before an admin or staff member can use the portal, that person must sign in once, then run `admin_portal.sql` again to assign their role.
+Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 
 ## Personal staff Gmail approvals
 
