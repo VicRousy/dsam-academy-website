@@ -21,7 +21,13 @@
       <div class="auth-divider"><span>or use your email</span></div>
       <form id="authForm">
         <label>Email Address<input id="email" type="email" autocomplete="email" required></label>
-        <label>Password<input id="password" type="password" autocomplete="current-password" minlength="8" required></label>
+        <label>
+          Password
+          <span class="password-input-wrap">
+            <input id="password" type="password" autocomplete="current-password" minlength="8" required>
+            <button id="passwordToggle" class="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          </span>
+        </label>
         <button id="emailButton" class="btn-primary auth-submit" type="submit">Sign In</button>
       </form>
       <button id="modeButton" class="auth-switch" type="button">New to DSAM'S? Create an account</button>

@@ -7,8 +7,8 @@ const googleButton = document.querySelector('#googleButton');
 const modeButton = document.querySelector('#modeButton');
 const emailButton = document.querySelector('#emailButton');
 const status = document.querySelector('#authStatus');
-const authCard = document.querySelector('#authCard');
-const signedInCard = document.querySelector('#signedInCard');
+const password = document.querySelector('#password');
+const passwordToggle = document.querySelector('#passwordToggle');
 let createMode = false;
 
 function showStatus(message, error = false) {
@@ -19,12 +19,20 @@ function showStatus(message, error = false) {
 function setMode() {
   emailButton.textContent = createMode ? 'Create Account' : 'Sign In';
   modeButton.textContent = createMode ? 'Already have an account? Sign in' : "New to DSAM'S? Create an account";
-  document.querySelector('#password').autocomplete = createMode ? 'new-password' : 'current-password';
+  password.autocomplete = createMode ? 'new-password' : 'current-password';
   showStatus('');
 }
 
+passwordToggle.addEventListener('click', () => {
+  const shouldShowPassword = password.type === 'password';
+  password.type = shouldShowPassword ? 'text' : 'password';
+  passwordToggle.textContent = shouldShowPassword ? 'Hide' : 'Show';
+  passwordToggle.setAttribute('aria-label', shouldShowPassword ? 'Hide password' : 'Show password');
+  passwordToggle.setAttribute('aria-pressed', String(shouldShowPassword));
+});
+
 if (!url || !key) {
-  [googleButton, emailButton, modeButton].forEach((button) => { button.disabled = true; });
+  [googleButton, emailButton, modeButton, passwordToggle].forEach((button) => { button.disabled = true; });
   showStatus('Student accounts are being set up. Please check back shortly.', true);
 } else {
   const supabase = createClient(url, key);
