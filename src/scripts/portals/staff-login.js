@@ -51,9 +51,3 @@ document.querySelector('#googleButton').onclick = async () => {
   const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/staff-login.html` } });
   if (error) show(error.message, true);
 };
-document.querySelector('#staffLoginForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const { error } = await supabase.auth.signInWithPassword({ email: document.querySelector('#email').value, password: document.querySelector('#password').value });
-  if (error) return show(error.message, true);
-  await routeSignedInUser();
-});
