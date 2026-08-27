@@ -10,6 +10,9 @@ export default defineConfig({
       input: {
         main: resolve('index.html'),
         auth: resolve('auth.html'),
+        studentSignup: resolve('student-signup.html'),
+        studentLogin: resolve('student-login.html'),
+        resetPassword: resolve('reset-password.html'),
         dashboard: resolve('dashboard.html'),
         admin: resolve('admin.html'),
         adminLogin: resolve('admin-login.html'),

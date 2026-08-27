@@ -12,36 +12,17 @@
 <body class="auth-page">
   <main class="auth-shell">
     <a class="auth-logo brand-logo" href="./index.html" aria-label="DSAM'S Academy of Music home"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
-    <section class="auth-card" id="authCard">
+    <section class="auth-card">
       <a class="auth-back" href="./index.html">← Back to academy</a>
       <p class="auth-kicker">STUDENT PORTAL</p>
-      <h1>Welcome to DSAM'S</h1>
-      <p class="auth-copy">Sign in to manage your enrolment, lesson information, and payments.</p>
-      <button id="googleButton" class="google-button" type="button"><span>G</span> Continue with Google</button>
-      <div class="auth-divider"><span>or use your email</span></div>
-      <form id="authForm">
-        <label>Email Address<input id="email" type="email" autocomplete="email" required></label>
-        <label>
-          Password
-          <span class="password-input-wrap">
-            <input id="password" type="password" autocomplete="current-password" minlength="8" required>
-            <button id="passwordToggle" class="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
-          </span>
-        </label>
-        <button id="emailButton" class="btn-primary auth-submit" type="submit">Sign In</button>
-      </form>
-      <button id="modeButton" class="auth-switch" type="button">New to DSAM'S? Create an account</button>
-      <p id="authStatus" class="auth-status" role="status" aria-live="polite"></p>
-    </section>
-    <section class="auth-card signed-in-card" id="signedInCard" hidden>
-      <a class="auth-back" href="./index.html">← Back to academy</a>
-      <p class="auth-kicker">STUDENT PORTAL</p>
-      <h1>You’re signed in.</h1>
-      <p id="memberEmail" class="auth-copy"></p>
-      <p class="auth-copy">Your student dashboard will appear here as the enrolment system is completed.</p>
-      <button id="signOutButton" class="btn-secondary auth-submit" type="button">Sign Out</button>
+      <h1>Welcome to DSAM’S</h1>
+      <p class="auth-copy">Choose how you want to access your student portal.</p>
+      <div class="auth-choice-list">
+        <a class="auth-choice" href="./student-signup.html"><strong>New student?</strong><span>Sign up for a Student Portal account →</span></a>
+        <a class="auth-choice" href="./student-login.html"><strong>Already have an account?</strong><span>Log in to your Student Portal →</span></a>
+      </div>
     </section>
   </main>
-  <script type="module" src="./src/scripts/portals/student-auth.js"></script>
+  <script type="module" src="./src/scripts/portals/student-welcome.js"></script>
 </body>
 </html>
