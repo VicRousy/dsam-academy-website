@@ -23,9 +23,12 @@ const { data: enrolment } = await supabase
 
 if (enrolment) {
   document.querySelector('#courseName').textContent = enrolment.courses.title;
-  document.querySelector('#courseDetail').textContent = enrolment.status === 'active'
-    ? 'Your enrolment is active.'
-    : "Your application is pending DSAM'S approval.";
+  const applicationDetails = {
+    active: 'Your enrolment is active.',
+    declined: "Your application was declined. Please contact DSAM'S Academy for assistance.",
+    pending: "Your application is pending DSAM'S approval.",
+  };
+  document.querySelector('#courseDetail').textContent = applicationDetails[enrolment.status] || "Your application is pending DSAM'S approval.";
 }
 
 const { data: lessons } = await supabase
