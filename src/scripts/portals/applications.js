@@ -17,6 +17,7 @@ if (!['admin', 'staff'].includes(role?.role)) {
   window.location.replace('./dashboard.html');
 } else {
   const isAdmin = role.role === 'admin';
+  const statusLabels = { active: 'APPROVED', pending: 'PENDING', declined: 'DECLINED' };
   portalKicker.textContent = isAdmin ? 'ADMIN PORTAL' : 'STAFF PORTAL';
   portalTitle.textContent = isAdmin ? 'Manage applications' : 'View applications';
   document.title = `${isAdmin ? 'Admin' : 'Staff'} Portal | DSAM'S Academy of Music`;
@@ -68,14 +69,17 @@ if (!['admin', 'staff'].includes(role?.role)) {
     list.innerHTML = applications.map((application) => {
       const student = students.get(application.student_id);
       const name = student?.full_name || student?.email || 'Student';
-      const actions = isAdmin ? `<div class="application-actions"><button data-action="active" data-id="${application.id}" ${application.status === 'active' ? 'disabled' : ''}>Approve</button><button data-action="declined" data-id="${application.id}" ${application.status === 'declined' ? 'disabled' : ''}>Decline</button></div>` : '<p class="staff-readonly">Read-only staff access</p>';
-      return `<article class="application-card"><div><p class="card-label">${application.status.toUpperCase()}</p><h2>${application.courses?.title || 'Programme'}</h2><p>${name}</p><p class="application-date">Applied ${new Date(application.created_at).toLocaleDateString()}</p></div>${actions}</article>`;
+      const actions = isAdmin ? `<div class="application-actions"><button data-action="active" data-id="${application.id}" ${application.status === 'active' ? 'disabled' : ''}>${application.status === 'active' ? 'Approved' : 'Approve'}</button><button data-action="declined" data-id="${application.id}" ${application.status === 'declined' ? 'disabled' : ''}>${application.status === 'declined' ? 'Declined' : 'Decline'}</button></div>` : '<p class="staff-readonly">Read-only staff access</p>';
+      return `<article class="application-card"><div><p class="card-label">${statusLabels[application.status] || 'PENDING'}</p><h2>${application.courses?.title || 'Programme'}</h2><p>${name}</p><p class="application-date">Applied ${new Date(application.created_at).toLocaleDateString()}</p></div>${actions}</article>`;
     }).join('');
     list.hidden = false;
     list.querySelectorAll('button[data-id]').forEach((button) => button.addEventListener('click', async () => {
       button.disabled = true;
       const { error: updateError } = await supabase.from('enrollments').update({ status: button.dataset.action }).eq('id', button.dataset.id);
       if (updateError) { status.textContent = updateError.message; status.className = 'admin-status error'; button.disabled = false; return; }
+      const applicationCard = button.closest('.application-card');
+      applicationCard.querySelector('.card-label').textContent = statusLabels[button.dataset.action];
+      applicationCard.querySelectorAll('button[data-id]').forEach((actionButton) => { actionButton.disabled = true; actionButton.textContent = actionButton.dataset.action === button.dataset.action ? (button.dataset.action === 'active' ? 'Approved' : 'Declined') : actionButton.textContent; });
       window.location.reload();
     }));
   }

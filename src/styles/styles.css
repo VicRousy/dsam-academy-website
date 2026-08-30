@@ -540,3 +540,17 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
     .brand-logo { padding: 6px 9px; border-radius: 9px; }
     .brand-logo img { width: 205px; max-width: 60vw; }
 }
+
+.enrollment-history { margin-top: 18px; }
+.enrollment-history h2 { margin: 8px 0; }
+.enrollment-history p:not(.card-label) { color: var(--text-secondary); }
+.enrollment-list { margin-top: 18px; }
+.enrollment-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; border-top: 1px solid var(--border-glass); }
+.enrollment-row div { display: grid; gap: 5px; }
+.enrollment-row strong { font-size: .95rem; }
+.enrollment-row span { color: var(--text-secondary); font-size: .82rem; }
+.enrollment-status { padding: 6px 10px; border: 1px solid var(--border-glass); border-radius: 999px; color: var(--text-secondary) !important; font-weight: 700; }
+.enrollment-status.active { border-color: #6ee7a0; color: #6ee7a0 !important; }
+.enrollment-status.declined { border-color: #f87171; color: #f87171 !important; }
+.enrollment-status.pending { border-color: var(--accent-gold); color: var(--accent-gold) !important; }
+@media (max-width: 520px) { .enrollment-row { align-items: flex-start; flex-direction: column; gap: 10px; } }

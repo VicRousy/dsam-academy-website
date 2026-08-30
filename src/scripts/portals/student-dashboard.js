@@ -13,22 +13,29 @@ document.querySelector('#signOutButton').onclick = async () => {
   window.location.replace('./auth.html');
 };
 
-const { data: enrolment } = await supabase
+const { data: enrolments } = await supabase
   .from('enrollments')
-  .select('status,courses(title)')
+  .select('status,created_at,courses(title)')
   .eq('student_id', user.id)
-  .order('id', { ascending: false })
-  .limit(1)
-  .maybeSingle();
+  .order('created_at', { ascending: false });
 
-if (enrolment) {
-  document.querySelector('#courseName').textContent = enrolment.courses.title;
-  const applicationDetails = {
-    active: 'Your enrolment is active.',
-    declined: "Your application was declined. Please contact DSAM'S Academy for assistance.",
-    pending: "Your application is pending DSAM'S approval.",
-  };
-  document.querySelector('#courseDetail').textContent = applicationDetails[enrolment.status] || "Your application is pending DSAM'S approval.";
+const applicationDetails = {
+  active: 'Your enrolment is active.',
+  declined: "Your application was declined. Please contact DSAM'S Academy for assistance.",
+  pending: "Your application is pending DSAM'S approval.",
+};
+const statusLabels = { active: 'Approved', declined: 'Declined', pending: 'Pending' };
+const escapeHtml = (value) => String(value || '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+const enrollmentList = document.querySelector('#enrollmentList');
+const enrollmentSummary = document.querySelector('#enrollmentSummary');
+
+if (enrolments?.length) {
+  const latestEnrolment = enrolments[0];
+  const approvedCount = enrolments.filter((enrolment) => enrolment.status === 'active').length;
+  document.querySelector('#courseName').textContent = latestEnrolment.courses?.title || 'Programme application';
+  document.querySelector('#courseDetail').textContent = applicationDetails[latestEnrolment.status] || applicationDetails.pending;
+  enrollmentSummary.textContent = `${enrolments.length} application${enrolments.length === 1 ? '' : 's'} submitted · ${approvedCount} approved`;
+  enrollmentList.innerHTML = enrolments.map((enrolment) => `<article class="enrollment-row"><div><strong>${escapeHtml(enrolment.courses?.title || 'Programme application')}</strong><span>Submitted ${new Date(enrolment.created_at).toLocaleDateString()}</span></div><span class="enrollment-status ${escapeHtml(enrolment.status)}">${escapeHtml(statusLabels[enrolment.status] || 'Pending')}</span></article>`).join('');
 }
 
 const { data: lessons } = await supabase
