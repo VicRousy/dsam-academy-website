@@ -577,4 +577,6 @@ img, video, iframe { max-width: 100%; }
     .portal-home { max-width: 62%; }
     .application-card { width: 100%; }
     .application-card .application-actions { margin-top: 14px; }
+    .hero h1, .section-header h2, .portal-welcome h1, .info-title { max-width: 100%; overflow-wrap: anywhere; }
+    .section-header { width: 100%; }
 }
