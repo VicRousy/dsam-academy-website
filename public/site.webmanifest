@@ -1,0 +1,10 @@
+{
+  "name": "DSAM'S Academy of Music",
+  "short_name": "DSAM Academy",
+  "description": "DSAM'S Academy of Music student and academy portal.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#07070a",
+  "theme_color": "#07070a",
+  "icons": [{"src":"/assets/dsam-academy-app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

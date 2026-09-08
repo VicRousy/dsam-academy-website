@@ -2,16 +2,17 @@
 
 ## Pending owner setup
 
-- [ ] Configure email notifications once the owner is available.
+- [ ] Refine mobile typography later: slightly reduce oversized headings and soften heavy bold text while preserving readability.
+
+- [ ] Configure email notifications after the official domain is purchased.
+  - We can test with a temporary provider sender, but production should use the academy domain.
   - Owner accesses `dsamacademyofmusic@gmail.com`.
   - Create/configure a Resend account and provide a restricted API key.
   - Send a notification to the owner for every new enrolment application.
   - Send students an email when an application is approved or declined.
   - Move email sending to the official DSAM domain when the domain is purchased.
 
-- [ ] Owner signs in once, then run `supabase/admin_portal.sql` to assign:
-  - `dsamacademyofmusic@gmail.com` as Admin.
-  - `dsamdsam32@gmail.com` as read-only Staff.
+- [x] Owner remains both Admin and Staff through the existing Admin role.
 
 - [ ] Add final tuition, payment-policy, and refund-policy details when provided by the owner.
 - [ ] Add approved course photos and videos when provided by the owner.
