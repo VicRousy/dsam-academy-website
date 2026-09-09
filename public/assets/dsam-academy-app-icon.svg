@@ -1,8 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
   <title>DSAM'S Academy of Music</title>
   <rect width="512" height="512" rx="96" fill="#f4e6b8"/>
-  <path d="M92 118h92c91 0 144 53 144 138s-53 138-144 138H92V118Zm72 62v152h20c43 0 70-27 70-76s-27-76-70-76h-20Z" fill="#263d58"/>
-  <path d="M290 142c37 7 57 31 57 65v118c0 19-14 32-31 32s-30-13-30-30c0-18 13-30 30-30 4 0 8 1 12 2v-65c-16 18-35 28-58 28v-55c27-2 48-12 58-29-8-9-20-15-38-18v-18Z" fill="#be2e27"/>
-  <path d="M374 108h34v246c0 30-18 50-45 50-20 0-35-14-35-33 0-21 16-36 37-36 3 0 6 1 9 2V108Z" fill="#4b3d86"/>
-  <text x="256" y="448" text-anchor="middle" fill="#17151b" font-family="Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="8">DSAM</text>
+  <image href="/assets/dsam-academy-app-icon.png" x="0" y="0" width="512" height="512" preserveAspectRatio="xMidYMid meet"/>
 </svg>
