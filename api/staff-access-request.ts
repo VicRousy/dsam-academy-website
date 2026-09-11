@@ -5,6 +5,16 @@ import { Resend } from 'resend';
 const appUrl = process.env.APP_URL || 'https://dsam-academy-website.vercel.app';
 const ownerEmail = process.env.STAFF_REQUEST_RECIPIENT || 'dsamacademyofmusic@gmail.com';
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  }[character] || character));
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -40,6 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!apiKey) return res.status(202).json({ success: true, notification: 'not_configured' });
 
   const reviewUrl = `${appUrl}/admin.html?staff-request=${request.id}`;
+  const safeEmail = escapeHtml(request.email);
+  const safeReviewUrl = escapeHtml(reviewUrl);
   const resend = new Resend(apiKey);
   const { error: emailError } = await resend.emails.send({
     from: process.env.FROM_EMAIL || "DSAM'S Academy <onboarding@resend.dev>",
@@ -47,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     replyTo: request.email,
     subject: 'Staff access request awaiting approval',
     headers: { 'Idempotency-Key': `staff-access-request-${request.id}` },
-    html: `<h2>New staff-access request</h2><p><strong>${request.email}</strong> wants read-only access to the DSAM'S Staff Portal.</p><p>Sign in with the owner Admin account before approving or denying access.</p><p><a href="${reviewUrl}" style="display:inline-block;padding:12px 18px;background:#e5a93b;color:#111;text-decoration:none;border-radius:8px;font-weight:700">Review staff request</a></p>`,
+    html: `<h2>New staff-access request</h2><p><strong>${safeEmail}</strong> wants read-only access to the DSAM'S Staff Portal.</p><p>Sign in with the owner Admin account before approving or denying access.</p><p><a href="${safeReviewUrl}" style="display:inline-block;padding:12px 18px;background:#e5a93b;color:#111;text-decoration:none;border-radius:8px;font-weight:700">Review staff request</a></p>`,
     text: `New staff-access request from ${request.email}. Review it securely at ${reviewUrl}`,
   });
 
