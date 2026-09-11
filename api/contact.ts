@@ -21,6 +21,8 @@ function escapeHtml(value: string) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -52,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const apiKey = process.env.RESEND_API_KEY;
   const enrollmentEmail = process.env.ENROLLMENT_EMAIL;
   if (!apiKey || !enrollmentEmail) {
-    return res.status(202).json({ success: true, notification: 'not_configured' });
+    return res.status(503).json({ error: 'Enrollment notifications are not configured yet.' });
   }
 
   const safeApplicant = {

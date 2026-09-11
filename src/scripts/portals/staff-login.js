@@ -22,14 +22,17 @@ const requestStaffAccess = async (user) => {
   if (error) return show(error.message, true);
   const { data: { session } } = await supabase.auth.getSession();
   if (session?.access_token) {
-    fetch('/api/staff-access-request', {
+    const notificationResponse = await fetch('/api/staff-access-request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({ requestId: newRequest.id }),
-    }).catch(() => undefined);
+    }).catch(() => null);
+    if (!notificationResponse?.ok) {
+      return show('Your request was saved, but the owner email notification could not be sent. Please contact the owner directly.', true);
+    }
   }
   show('Your staff-access request has been sent to the DSAM owner for approval.');
 };

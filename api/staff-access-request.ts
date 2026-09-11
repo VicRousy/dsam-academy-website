@@ -16,6 +16,8 @@ function escapeHtml(value: string) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const token = Array.isArray(req.headers.authorization)
@@ -47,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return res.status(202).json({ success: true, notification: 'not_configured' });
+  if (!apiKey) return res.status(503).json({ error: 'Staff notifications are not configured yet.' });
 
   const reviewUrl = `${appUrl}/admin.html?staff-request=${request.id}`;
   const safeEmail = escapeHtml(request.email);
