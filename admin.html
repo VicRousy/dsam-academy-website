@@ -15,20 +15,100 @@
   <main class="portal-shell admin-shell">
     <header class="portal-header">
       <a class="auth-logo brand-logo" href="./index.html"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
-      <a class="portal-home" href="./index.html">← Back to academy</a>
+      <div class="portal-actions">
+        <span id="portalRole" class="portal-type">ADMIN PORTAL</span>
+        <a class="portal-home" href="./index.html">← Back to academy</a>
+        <button id="signOutButton" class="portal-signout">Sign out</button>
+      </div>
     </header>
     <section class="portal-welcome">
-      <p id="portalKicker" class="auth-kicker">ADMISSIONS PORTAL</p>
-      <h1 id="portalTitle">Applications</h1>
+      <p id="portalKicker" class="auth-kicker">ADMIN PORTAL</p>
+      <h1 id="portalTitle">Academy operations</h1>
+      <p id="portalDescription">Monitor applications, student activity, and staff access from one place.</p>
     </section>
     <div id="adminStatus" class="admin-status" role="status"></div>
-    <section id="applicationList" class="application-list" hidden></section>
-    <section id="staffRequests" class="staff-requests" hidden>
-      <div class="staff-requests-heading">
-        <div><p class="auth-kicker">STAFF ACCESS</p><h2>Pending staff requests</h2></div>
-        <p>Approve only people the academy owner personally recognises.</p>
+    <section class="admin-metrics" aria-label="Academy summary">
+      <article class="admin-metric"><p class="card-label">TOTAL APPLICATIONS</p><strong id="totalApplications">0</strong><span>All submitted applications</span></article>
+      <article class="admin-metric"><p class="card-label">PENDING REVIEW</p><strong id="pendingApplications">0</strong><span>Waiting for a decision</span></article>
+      <article class="admin-metric"><p class="card-label">ACTIVE STUDENTS</p><strong id="activeStudents">0</strong><span>Approved enrolments</span></article>
+      <article class="admin-metric"><p class="card-label">STAFF REQUESTS</p><strong id="pendingStaffRequests">0</strong><span>Waiting for approval</span></article>
+    </section>
+    <nav class="admin-navigation" aria-label="Portal sections">
+      <button class="admin-nav-button active" type="button" data-panel="applications">Applications</button>
+      <button class="admin-nav-button" type="button" data-panel="students">Students</button>
+      <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only>Courses</button>
+      <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
+      <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
+    </nav>
+    <section id="applicationsPanel" class="admin-panel">
+      <section class="admin-workspace">
+      <div class="admin-toolbar" aria-label="Application filters">
+        <label class="admin-search">Search applications<input id="applicationSearch" type="search" placeholder="Name, email, or programme" autocomplete="off"></label>
+        <label class="admin-filter">Status<select id="applicationStatus"><option value="all">All statuses</option><option value="pending">Pending</option><option value="active">Approved</option><option value="declined">Declined</option></select></label>
       </div>
-      <div id="staffRequestList" class="staff-request-list"></div>
+        <section id="applicationList" class="application-list" hidden></section>
+      </section>
+      <section id="applicationDetails" class="application-details" hidden aria-labelledby="detailsTitle">
+        <div class="details-heading"><div><p class="auth-kicker">APPLICATION DETAILS</p><h2 id="detailsTitle">Student application</h2></div><button id="closeDetails" class="details-close" type="button" aria-label="Close application details">×</button></div>
+        <div id="detailsContent" class="details-content"></div>
+      </section>
+      <section id="staffRequests" class="staff-requests" hidden>
+        <div class="staff-requests-heading">
+          <div><p class="auth-kicker">STAFF ACCESS</p><h2>Pending staff requests</h2></div>
+          <p>Approve only people the academy owner personally recognises.</p>
+        </div>
+        <div id="staffRequestList" class="staff-request-list"></div>
+      </section>
+    </section>
+    <section id="studentsPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">STUDENT RECORDS</p><h2>Students and applications</h2></div><p>Review student details and their application history. Only the owner administrator can edit records.</p></div>
+      <form id="studentForm" class="management-form" hidden>
+        <input id="studentId" type="hidden">
+        <label>Full name<input id="studentFullName" required maxlength="160"></label>
+        <label>Phone<input id="studentPhone" maxlength="40"></label>
+        <label>Instrument or focus<input id="studentInstrument" maxlength="120"></label>
+        <label class="form-wide">Private admin notes<textarea id="studentNotes" rows="3" maxlength="2000"></textarea></label>
+        <div class="form-actions"><button type="submit">Save student record</button><button id="cancelStudentEdit" type="button" class="secondary-button">Cancel</button></div>
+      </form>
+      <div id="studentList" class="management-list"></div>
+    </section>
+    <section id="coursesPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">COURSE CATALOGUE</p><h2>Programmes and tuition</h2></div><p>Create and maintain the programmes that applicants can select.</p></div>
+      <form id="courseForm" class="management-form">
+        <input id="courseId" type="hidden">
+        <label>Programme title<input id="courseTitle" required maxlength="180"></label>
+        <label>Duration in weeks<input id="courseDuration" type="number" min="1" step="1"></label>
+        <label>Tuition (₦)<input id="courseTuition" type="number" min="0" step="0.01"></label>
+        <label>Availability<select id="courseActive"><option value="true">Open for enrolment</option><option value="false">Hidden from enrolment</option></select></label>
+        <label class="form-wide">Description<textarea id="courseDescription" rows="3" maxlength="1000"></textarea></label>
+        <div class="form-actions"><button type="submit">Save programme</button><button id="cancelCourseEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>
+      </form>
+      <div id="courseList" class="management-list"></div>
+    </section>
+    <section id="lessonsPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">LESSON SCHEDULING</p><h2>Schedule lessons</h2></div><p>Admin and approved staff can schedule lessons for students.</p></div>
+      <form id="lessonForm" class="management-form">
+        <label>Student<select id="lessonStudent" required></select></label>
+        <label>Programme<select id="lessonCourse"><option value="">No programme selected</option></select></label>
+        <label>Lesson title<input id="lessonTitle" maxlength="160" placeholder="Piano practical"></label>
+        <label>Start date and time<input id="lessonStartsAt" type="datetime-local" required></label>
+        <label>Instructor<input id="lessonInstructor" maxlength="160"></label>
+        <label>Location<input id="lessonLocation" maxlength="160"></label>
+        <div class="form-actions"><button type="submit">Schedule lesson</button></div>
+      </form>
+      <div id="lessonList" class="management-list"></div>
+    </section>
+    <section id="paymentsPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">PAYMENT RECORDS</p><h2>Record payments</h2></div><p>Only the owner administrator can create or update financial records.</p></div>
+      <form id="paymentForm" class="management-form">
+        <label>Student<select id="paymentStudent" required></select></label>
+        <label>Amount (₦)<input id="paymentAmount" type="number" min="0" step="0.01" required></label>
+        <label>Status<select id="paymentStatus"><option value="pending">Pending</option><option value="paid">Paid</option><option value="overdue">Overdue</option><option value="waived">Waived</option></select></label>
+        <label>Reference<input id="paymentReference" maxlength="160" placeholder="Transfer reference or receipt number"></label>
+        <label class="form-wide">Private payment note<textarea id="paymentNotes" rows="3" maxlength="1000"></textarea></label>
+        <div class="form-actions"><button type="submit">Save payment record</button></div>
+      </form>
+      <div id="paymentList" class="management-list"></div>
     </section>
   </main>
   <script type="module" src="./src/scripts/portals/applications.js"></script>

@@ -6,5 +6,8 @@
   "display": "standalone",
   "background_color": "#07070a",
   "theme_color": "#07070a",
-  "icons": [{"src":"/assets/dsam-academy-app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "icons": [
+    {"src":"/assets/dsam-academy-app-icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
+    {"src":"/assets/dsam-academy-app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
 }

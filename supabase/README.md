@@ -4,6 +4,8 @@
 
 Run `20260813_enrollment_hardening.sql` once in the Supabase SQL Editor. It is an additive safety upgrade: it keeps your existing students, enrolments, courses, payments, and lessons.
 
+Run `admin_operations.sql` after the existing setup files to enable the expanded Admin and Staff operations model. It adds management fields without deleting existing data, allows admins to manage courses and payments, allows admins to update student records, and allows admin/staff users to manage lesson sessions according to their roles.
+
 It adds these protections:
 
 - Students can submit only one application per programme.

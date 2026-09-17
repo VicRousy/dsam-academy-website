@@ -57,3 +57,22 @@ test('staff notification email escapes user-controlled HTML values', async () =>
   assert.match(source, /const safeEmail = escapeHtml\(request\.email\)/);
   assert.match(source, /const safeReviewUrl = escapeHtml\(reviewUrl\)/);
 });
+
+test('operations migration keeps financial writes admin-only', async () => {
+  const sql = await read('supabase/admin_operations.sql');
+
+  assert.match(sql, /create policy "admins manage payments"[\s\S]*?for all[\s\S]*?using \(public\.is_admin\(\)\)/);
+  assert.match(sql, /create policy "staff manage lesson sessions"[\s\S]*?for all[\s\S]*?using \(public\.is_staff\(\)\)/);
+  assert.match(sql, /create policy "admins manage courses"[\s\S]*?for all[\s\S]*?using \(public\.is_admin\(\)\)/);
+  assert.match(sql, /create policy "admins manage student notes"[\s\S]*?for all[\s\S]*?using \(public\.is_admin\(\)\)/);
+});
+
+test('operations portal keeps admin-only sections out of staff navigation', async () => {
+  const markup = await read('admin.html');
+  const script = await read('src/scripts/portals/applications.js');
+
+  assert.match(markup, /data-panel="courses" data-admin-only/);
+  assert.match(markup, /data-panel="payments" data-admin-only/);
+  assert.match(script, /document\.querySelectorAll\('\[data-admin-only\]'\)/);
+  assert.match(script, /if \(!isAdmin\).*data-admin-only/s);
+});
