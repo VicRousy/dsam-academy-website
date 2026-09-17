@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>My Dashboard | DSAM'S</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/assets/dsam-academy-app-icon.svg" type="image/svg+xml">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +25,7 @@
     <section class="portal-welcome">
       <p class="auth-kicker">STUDENT PORTAL</p>
       <h1 id="studentName">Welcome</h1>
+      <p id="studentWelcome">Keep track of your programme, lessons, and payments in one place.</p>
     </section>
     <section class="dashboard-grid">
       <article class="dashboard-card">
@@ -43,6 +45,23 @@
         <p id="paymentDetail">Payment records will appear after your enrolment is confirmed.</p>
       </article>
     </section>
+    <section class="dashboard-card student-profile-card">
+      <div class="student-section-heading">
+        <div>
+          <p class="card-label">MY PROFILE</p>
+          <h2>Keep your learning details current</h2>
+          <p>Your academy team uses these details to prepare your lessons and contact you.</p>
+        </div>
+        <span id="profileStatus" class="profile-status" role="status"></span>
+      </div>
+      <form id="profileForm" class="student-profile-form">
+        <label>Full name<input id="profileName" name="full_name" autocomplete="name" required></label>
+        <label>Email address<input id="profileEmail" type="email" disabled></label>
+        <label>Phone number<input id="profilePhone" name="phone" autocomplete="tel" placeholder="e.g. +234 800 000 0000"></label>
+        <label>Primary instrument or interest<input id="profileInstrument" name="instrument" placeholder="e.g. Piano, Voice, Guitar"></label>
+        <div class="student-form-actions"><button type="submit">Save profile</button></div>
+      </form>
+    </section>
     <section class="dashboard-card enrollment-history">
       <div>
         <p class="card-label">YOUR ENROLMENTS</p>
@@ -57,6 +76,22 @@
         <h2>Your upcoming lessons</h2>
       </div>
       <div id="scheduleList" class="schedule-list"><p>No upcoming lessons yet.</p></div>
+    </section>
+    <section class="dashboard-card payment-history">
+      <div>
+        <p class="card-label">PAYMENT HISTORY</p>
+        <h2>Your recorded payments</h2>
+        <p>Payments are recorded by the academy after confirmation.</p>
+      </div>
+      <div id="paymentList" class="payment-list"><p>No payment records yet.</p></div>
+    </section>
+    <section class="student-support-card">
+      <div>
+        <p class="card-label">NEED HELP?</p>
+        <h2>Contact the academy team</h2>
+        <p>For payment questions, lesson changes, or enrolment support, contact DSAM'S Academy directly.</p>
+      </div>
+      <a class="dashboard-link" href="mailto:dsamacademyofmusic@gmail.com?subject=Student%20Portal%20Support">Email the academy →</a>
     </section>
   </main>
   <script type="module" src="./src/scripts/portals/student-dashboard.js"></script>

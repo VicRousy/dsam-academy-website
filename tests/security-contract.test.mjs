@@ -76,3 +76,13 @@ test('operations portal keeps admin-only sections out of staff navigation', asyn
   assert.match(script, /document\.querySelectorAll\('\[data-admin-only\]'\)/);
   assert.match(script, /if \(!isAdmin\).*data-admin-only/s);
 });
+
+test('students can update only their own profile details', async () => {
+  const sql = await read('supabase/student_operations.sql');
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(sql, /grant update on public\.profiles to authenticated;/);
+  assert.match(sql, /create policy "users update own profile"[\s\S]*?for update[\s\S]*?using \(auth\.uid\(\) = id\)[\s\S]*?with check \(auth\.uid\(\) = id\)/);
+  assert.match(dashboard, /\.from\('profiles'\)[\s\S]*?\.update\(/);
+  assert.match(dashboard, /\.eq\('id', user\.id\)/);
+});

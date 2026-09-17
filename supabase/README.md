@@ -6,6 +6,8 @@ Run `20260813_enrollment_hardening.sql` once in the Supabase SQL Editor. It is a
 
 Run `admin_operations.sql` after the existing setup files to enable the expanded Admin and Staff operations model. It adds management fields without deleting existing data, allows admins to manage courses and payments, allows admins to update student records, and allows admin/staff users to manage lesson sessions according to their roles.
 
+Run `student_operations.sql` after `admin_operations.sql` to allow each authenticated student to update only their own profile details in the Student Portal. It does not change enrolments, lessons, payments, or staff/admin permissions.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -23,6 +25,8 @@ Run the existing files in this order:
 4. `fix_student_access.sql`
 5. `admin_portal.sql`
 6. `20260813_enrollment_hardening.sql`
+7. `admin_operations.sql`
+8. `student_operations.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 
