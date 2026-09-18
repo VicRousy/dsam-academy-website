@@ -86,3 +86,25 @@ test('students can update only their own profile details', async () => {
   assert.match(dashboard, /\.from\('profiles'\)[\s\S]*?\.update\(/);
   assert.match(dashboard, /\.eq\('id', user\.id\)/);
 });
+
+test('learning workspace keeps academic information role-scoped', async () => {
+  const sql = await read('supabase/learning_workspace.sql');
+
+  assert.match(sql, /create policy "students read published course materials"[\s\S]*?enrollments\.student_id = auth\.uid\(\)[\s\S]*?enrollments\.status = 'active'/);
+  assert.match(sql, /create policy "staff manage learning materials"[\s\S]*?using \(public\.is_staff\(\)\)/);
+  assert.match(sql, /create policy "students read own progress entries"[\s\S]*?using \(auth\.uid\(\) = student_id\)/);
+  assert.match(sql, /create policy "admins manage academy announcements"[\s\S]*?using \(public\.is_admin\(\)\)/);
+  assert.match(sql, /audience = 'active_students'[\s\S]*?enrollments\.status = 'active'/);
+});
+
+test('student dashboard includes the learning workspace feeds', async () => {
+  const markup = await read('dashboard.html');
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(markup, /id="learningMaterialList"/);
+  assert.match(markup, /id="progressEntryList"/);
+  assert.match(markup, /id="announcementFeed"/);
+  assert.match(dashboard, /\.from\('learning_materials'\)/);
+  assert.match(dashboard, /\.from\('student_progress_entries'\)/);
+  assert.match(dashboard, /\.from\('academy_announcements'\)/);
+});

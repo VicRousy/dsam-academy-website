@@ -8,6 +8,8 @@ Run `admin_operations.sql` after the existing setup files to enable the expanded
 
 Run `student_operations.sql` after `admin_operations.sql` to allow each authenticated student to update only their own profile details in the Student Portal. It does not change enrolments, lessons, payments, or staff/admin permissions.
 
+Run `learning_workspace.sql` after `admin_operations.sql` to enable the learning workspace. It adds course materials, tutor progress feedback, lesson attendance, and academy announcements. Students can see only published materials for an approved programme, their own progress entries, and published announcements. Admin/staff manage materials and progress; only the owner-admin manages academy announcements.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -27,6 +29,7 @@ Run the existing files in this order:
 6. `20260813_enrollment_hardening.sql`
 7. `admin_operations.sql`
 8. `student_operations.sql`
+9. `learning_workspace.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 

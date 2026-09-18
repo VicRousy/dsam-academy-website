@@ -22,6 +22,8 @@ let applications = [];
 let profiles = [];
 let courses = [];
 let privateNotes = new Map();
+let learningMaterials = [];
+let announcements = [];
 let isAdmin = false;
 let pendingStaffCount = 0;
 
@@ -36,7 +38,9 @@ const showPanel = async (panelName) => {
   if (panelName === 'students') renderStudents();
   if (panelName === 'courses') await loadCourses();
   if (panelName === 'lessons') await loadLessons();
+  if (panelName === 'learning') await loadLearningWorkspace();
   if (panelName === 'payments') await loadPayments();
+  if (panelName === 'announcements') await loadAnnouncements();
 };
 
 const updateMetrics = () => {
@@ -143,6 +147,7 @@ const renderStudentOptions = () => {
   const options = ['<option value="">Select a student</option>', ...profiles.map((profile) => `<option value="${profile.id}">${escapeHtml(profile.full_name || profile.email || 'Student')} · ${escapeHtml(profile.email || '')}</option>`)].join('');
   document.querySelector('#lessonStudent').innerHTML = options;
   document.querySelector('#paymentStudent').innerHTML = options;
+  document.querySelector('#progressStudent').innerHTML = options;
 };
 
 const loadProfiles = async () => {
@@ -202,6 +207,8 @@ const loadCourses = async () => {
   }
   courses = data || [];
   document.querySelector('#lessonCourse').innerHTML = ['<option value="">No programme selected</option>', ...courses.filter((course) => course.is_active).map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
+  document.querySelector('#materialCourse').innerHTML = ['<option value="">Select a programme</option>', ...courses.map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
+  document.querySelector('#progressCourse').innerHTML = ['<option value="">No programme selected</option>', ...courses.map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
   courseList.innerHTML = courses.length ? courses.map((course) => `<article class="management-card"><div><p class="card-label">${course.is_active ? 'OPEN FOR ENROLMENT' : 'ARCHIVED'}</p><h3>${escapeHtml(course.title)}</h3><p>${escapeHtml(course.description || 'No description added.')}</p><p>${course.duration_weeks ? `${course.duration_weeks} weeks` : 'Duration not set'} · ${course.tuition_ngn === null ? 'Tuition not set' : formatNaira(course.tuition_ngn)}</p></div><button class="details-button" data-course-id="${course.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No programmes have been added yet.</p>';
   courseList.querySelectorAll('[data-course-id]').forEach((button) => button.addEventListener('click', () => openCourseEditor(button.dataset.courseId)));
 };
@@ -227,15 +234,22 @@ const resetCourseForm = () => {
 const loadLessons = async () => {
   const lessonList = document.querySelector('#lessonList');
   if (!courses.length) await loadCourses();
-  const { data, error } = await supabase.from('lesson_sessions').select('id,student_id,course_id,title,starts_at,instructor,location,status,courses(title)').order('starts_at', { ascending: true }).limit(100);
-  if (error) {
+  let result = await supabase.from('lesson_sessions').select('id,student_id,course_id,title,starts_at,instructor,location,status,attendance_status,courses(title)').order('starts_at', { ascending: true }).limit(100);
+  if (result.error) result = await supabase.from('lesson_sessions').select('id,student_id,course_id,title,starts_at,instructor,location,status,courses(title)').order('starts_at', { ascending: true }).limit(100);
+  if (result.error) {
     lessonList.innerHTML = '<p class="admin-status error">Lesson scheduling needs the `admin_operations.sql` migration to be run in Supabase first.</p>';
     return;
   }
-  lessonList.innerHTML = data?.length ? data.map((lesson) => {
+  lessonList.innerHTML = result.data?.length ? result.data.map((lesson) => {
     const student = profiles.find((profile) => profile.id === lesson.student_id);
-    return `<article class="management-card"><div><p class="card-label">${escapeHtml(lesson.status || 'scheduled').toUpperCase()}</p><h3>${escapeHtml(lesson.title || lesson.courses?.title || 'Lesson session')}</h3><p>${escapeHtml(student?.full_name || student?.email || 'Student')} · ${formatDate(lesson.starts_at)}</p><p>${escapeHtml(lesson.instructor || "DSAM'S Tutor")} · ${escapeHtml(lesson.location || "DSAM'S Academy")}</p></div></article>`;
+    const attendance = lesson.attendance_status ? `<label class="lesson-attendance">Attendance<select data-attendance-id="${lesson.id}"><option value="scheduled" ${lesson.attendance_status === 'scheduled' ? 'selected' : ''}>Scheduled</option><option value="attended" ${lesson.attendance_status === 'attended' ? 'selected' : ''}>Attended</option><option value="missed" ${lesson.attendance_status === 'missed' ? 'selected' : ''}>Missed</option><option value="cancelled" ${lesson.attendance_status === 'cancelled' ? 'selected' : ''}>Cancelled</option></select></label>` : '';
+    return `<article class="management-card"><div><p class="card-label">${escapeHtml(lesson.status || 'scheduled').toUpperCase()}</p><h3>${escapeHtml(lesson.title || lesson.courses?.title || 'Lesson session')}</h3><p>${escapeHtml(student?.full_name || student?.email || 'Student')} · ${formatDate(lesson.starts_at)}</p><p>${escapeHtml(lesson.instructor || "DSAM'S Tutor")} · ${escapeHtml(lesson.location || "DSAM'S Academy")}</p></div>${attendance}</article>`;
   }).join('') : '<p class="admin-empty">No lessons are scheduled yet.</p>';
+  lessonList.querySelectorAll('[data-attendance-id]').forEach((select) => select.addEventListener('change', async () => {
+    const { error } = await supabase.from('lesson_sessions').update({ attendance_status: select.value, updated_at: new Date().toISOString() }).eq('id', select.dataset.attendanceId);
+    if (error) return showStatus(error.message, true);
+    showStatus('Lesson attendance updated.');
+  }));
 };
 
 const loadPayments = async () => {
@@ -249,6 +263,84 @@ const loadPayments = async () => {
     const student = profiles.find((profile) => profile.id === payment.student_id);
     return `<article class="management-card"><div><p class="card-label">${escapeHtml(payment.status || 'pending').toUpperCase()}</p><h3>${formatNaira(payment.amount_ngn)}</h3><p>${escapeHtml(student?.full_name || student?.email || 'Student')} · ${new Date(payment.created_at).toLocaleDateString()}</p><p>${escapeHtml(payment.reference || 'No reference')} ${payment.notes ? `· ${escapeHtml(payment.notes)}` : ''}</p></div></article>`;
   }).join('') : '<p class="admin-empty">No payment records have been added yet.</p>';
+};
+
+const resetMaterialForm = () => {
+  document.querySelector('#materialForm').reset();
+  document.querySelector('#materialId').value = '';
+  document.querySelector('#cancelMaterialEdit').hidden = true;
+};
+
+const openMaterialEditor = (materialId) => {
+  const material = learningMaterials.find((item) => item.id === materialId);
+  if (!material) return;
+  document.querySelector('#materialId').value = material.id;
+  document.querySelector('#materialCourse').value = material.course_id;
+  document.querySelector('#materialType').value = material.material_type || 'resource';
+  document.querySelector('#materialTitle').value = material.title || '';
+  document.querySelector('#materialUrl').value = material.resource_url || '';
+  document.querySelector('#materialDescription').value = material.description || '';
+  document.querySelector('#materialPublished').value = String(material.is_published);
+  document.querySelector('#cancelMaterialEdit').hidden = false;
+  document.querySelector('#materialForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const loadLearningWorkspace = async () => {
+  await loadCourses();
+  const materialList = document.querySelector('#materialList');
+  const { data, error } = await supabase.from('learning_materials').select('id,course_id,title,description,material_type,resource_url,is_published,created_at,courses(title)').order('created_at', { ascending: false }).limit(100);
+  if (error) {
+    materialList.innerHTML = '<p class="admin-status error">Learning tools need the `learning_workspace.sql` migration to be run in Supabase first.</p>';
+    document.querySelector('#progressList').innerHTML = '';
+    return;
+  }
+  learningMaterials = data || [];
+  materialList.innerHTML = learningMaterials.length ? learningMaterials.map((material) => `<article class="management-card"><div><p class="card-label">${escapeHtml(material.material_type || 'resource').replace('_', ' ').toUpperCase()} · ${material.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(material.title)}</h3><p>${escapeHtml(material.courses?.title || 'Programme')}</p><p>${escapeHtml(material.description || 'No description added.')}</p></div><button class="details-button" data-material-id="${material.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No learning materials have been added yet.</p>';
+  materialList.querySelectorAll('[data-material-id]').forEach((button) => button.addEventListener('click', () => openMaterialEditor(button.dataset.materialId)));
+  await loadProgressEntries();
+};
+
+const loadProgressEntries = async () => {
+  const progressList = document.querySelector('#progressList');
+  const { data, error } = await supabase.from('student_progress_entries').select('id,student_id,course_id,title,feedback,practice_goal,progress_level,recorded_at,courses(title)').order('recorded_at', { ascending: false }).limit(100);
+  if (error) {
+    progressList.innerHTML = '<p class="admin-status error">Student progress needs the `learning_workspace.sql` migration to be run in Supabase first.</p>';
+    return;
+  }
+  progressList.innerHTML = data?.length ? data.map((entry) => {
+    const student = profiles.find((profile) => profile.id === entry.student_id);
+    return `<article class="management-card"><div><p class="card-label">${escapeHtml(entry.progress_level || 'developing').toUpperCase()}</p><h3>${escapeHtml(entry.title)}</h3><p>${escapeHtml(student?.full_name || student?.email || 'Student')} · ${escapeHtml(entry.courses?.title || 'General study')}</p><p>${escapeHtml(entry.feedback || entry.practice_goal || 'Progress update recorded.')}</p></div></article>`;
+  }).join('') : '<p class="admin-empty">No student progress updates have been recorded yet.</p>';
+};
+
+const resetAnnouncementForm = () => {
+  document.querySelector('#announcementForm').reset();
+  document.querySelector('#announcementId').value = '';
+  document.querySelector('#cancelAnnouncementEdit').hidden = true;
+};
+
+const openAnnouncementEditor = (announcementId) => {
+  const announcement = announcements.find((item) => item.id === announcementId);
+  if (!announcement || !isAdmin) return;
+  document.querySelector('#announcementId').value = announcement.id;
+  document.querySelector('#announcementTitle').value = announcement.title || '';
+  document.querySelector('#announcementAudience').value = announcement.audience || 'students';
+  document.querySelector('#announcementPublished').value = String(announcement.is_published);
+  document.querySelector('#announcementBody').value = announcement.body || '';
+  document.querySelector('#cancelAnnouncementEdit').hidden = false;
+  document.querySelector('#announcementForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const loadAnnouncements = async () => {
+  const announcementList = document.querySelector('#announcementList');
+  const { data, error } = await supabase.from('academy_announcements').select('id,title,body,audience,is_published,published_at,updated_at').order('published_at', { ascending: false }).limit(100);
+  if (error) {
+    announcementList.innerHTML = '<p class="admin-status error">Announcements need the `learning_workspace.sql` migration to be run in Supabase first.</p>';
+    return;
+  }
+  announcements = data || [];
+  announcementList.innerHTML = announcements.length ? announcements.map((announcement) => `<article class="management-card"><div><p class="card-label">${announcement.is_published ? 'PUBLISHED' : 'DRAFT'} · ${escapeHtml(announcement.audience || 'students').replace('_', ' ').toUpperCase()}</p><h3>${escapeHtml(announcement.title)}</h3><p>${escapeHtml(announcement.body)}</p><p>${formatDate(announcement.updated_at || announcement.published_at)}</p></div><button class="details-button" data-announcement-id="${announcement.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No announcements have been created yet.</p>';
+  announcementList.querySelectorAll('[data-announcement-id]').forEach((button) => button.addEventListener('click', () => openAnnouncementEditor(button.dataset.announcementId)));
 };
 
 const bindForms = () => {
@@ -327,6 +419,65 @@ const bindForms = () => {
     await loadPayments();
     showStatus('Payment record saved.');
   });
+  document.querySelector('#materialForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const materialId = document.querySelector('#materialId').value;
+    const payload = {
+      course_id: document.querySelector('#materialCourse').value,
+      material_type: document.querySelector('#materialType').value,
+      title: document.querySelector('#materialTitle').value.trim(),
+      resource_url: document.querySelector('#materialUrl').value.trim() || null,
+      description: document.querySelector('#materialDescription').value.trim() || null,
+      is_published: document.querySelector('#materialPublished').value === 'true',
+      updated_at: new Date().toISOString(),
+    };
+    const request = materialId
+      ? supabase.from('learning_materials').update(payload).eq('id', materialId)
+      : supabase.from('learning_materials').insert({ ...payload, created_by: session.user.id });
+    const { error } = await request;
+    if (error) return showStatus(error.message, true);
+    resetMaterialForm();
+    await loadLearningWorkspace();
+    showStatus(`Learning material ${materialId ? 'updated' : 'published'}.`);
+  });
+  document.querySelector('#cancelMaterialEdit').addEventListener('click', resetMaterialForm);
+  document.querySelector('#progressForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = {
+      student_id: document.querySelector('#progressStudent').value,
+      course_id: document.querySelector('#progressCourse').value || null,
+      title: document.querySelector('#progressTitle').value.trim(),
+      feedback: document.querySelector('#progressFeedback').value.trim() || null,
+      practice_goal: document.querySelector('#progressGoal').value.trim() || null,
+      progress_level: document.querySelector('#progressLevel').value,
+      created_by: session.user.id,
+    };
+    const { error } = await supabase.from('student_progress_entries').insert(payload);
+    if (error) return showStatus(error.message, true);
+    event.currentTarget.reset();
+    await loadProgressEntries();
+    showStatus('Student progress update recorded.');
+  });
+  document.querySelector('#announcementForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const announcementId = document.querySelector('#announcementId').value;
+    const payload = {
+      title: document.querySelector('#announcementTitle').value.trim(),
+      audience: document.querySelector('#announcementAudience').value,
+      is_published: document.querySelector('#announcementPublished').value === 'true',
+      body: document.querySelector('#announcementBody').value.trim(),
+      updated_at: new Date().toISOString(),
+    };
+    const request = announcementId
+      ? supabase.from('academy_announcements').update(payload).eq('id', announcementId)
+      : supabase.from('academy_announcements').insert({ ...payload, created_by: session.user.id });
+    const { error } = await request;
+    if (error) return showStatus(error.message, true);
+    resetAnnouncementForm();
+    await loadAnnouncements();
+    showStatus(`Announcement ${announcementId ? 'updated' : 'saved'}.`);
+  });
+  document.querySelector('#cancelAnnouncementEdit').addEventListener('click', resetAnnouncementForm);
 };
 
 const { data: { session } } = await supabase.auth.getSession();

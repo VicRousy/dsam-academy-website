@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Admissions Admin | DSAM'S Academy of Music</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/assets/dsam-academy-app-icon.svg" type="image/svg+xml">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +39,9 @@
       <button class="admin-nav-button" type="button" data-panel="students">Students</button>
       <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only>Courses</button>
       <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
+      <button class="admin-nav-button" type="button" data-panel="learning">Learning</button>
       <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
+      <button class="admin-nav-button" type="button" data-panel="announcements" data-admin-only>Announcements</button>
     </nav>
     <section id="applicationsPanel" class="admin-panel">
       <section class="admin-workspace">
@@ -109,6 +112,50 @@
         <div class="form-actions"><button type="submit">Save payment record</button></div>
       </form>
       <div id="paymentList" class="management-list"></div>
+    </section>
+    <section id="learningPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">LEARNING DELIVERY</p><h2>Materials and progress</h2></div><p>Admin and approved staff can share course resources and record student feedback or practice goals.</p></div>
+      <div class="learning-admin-grid">
+        <div>
+          <h3 class="management-subheading">Course materials</h3>
+          <form id="materialForm" class="management-form compact-form">
+            <input id="materialId" type="hidden">
+            <label>Programme<select id="materialCourse" required></select></label>
+            <label>Material type<select id="materialType"><option value="resource">Resource</option><option value="assignment">Assignment</option><option value="sheet_music">Sheet music</option><option value="video">Video</option><option value="recording">Recording</option></select></label>
+            <label class="form-wide">Title<input id="materialTitle" required maxlength="180" placeholder="Week 1 scale practice"></label>
+            <label class="form-wide">Resource link<input id="materialUrl" type="url" maxlength="1000" placeholder="https://..."></label>
+            <label class="form-wide">Description<textarea id="materialDescription" rows="3" maxlength="1500"></textarea></label>
+            <label>Visibility<select id="materialPublished"><option value="true">Published to students</option><option value="false">Draft — staff only</option></select></label>
+            <div class="form-actions"><button type="submit">Save material</button><button id="cancelMaterialEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>
+          </form>
+          <div id="materialList" class="management-list"></div>
+        </div>
+        <div>
+          <h3 class="management-subheading">Student progress update</h3>
+          <form id="progressForm" class="management-form compact-form">
+            <label>Student<select id="progressStudent" required></select></label>
+            <label>Programme<select id="progressCourse"><option value="">No programme selected</option></select></label>
+            <label class="form-wide">Update title<input id="progressTitle" required maxlength="180" placeholder="Rhythm and timing progress"></label>
+            <label>Progress level<select id="progressLevel"><option value="beginner">Beginning</option><option value="developing" selected>Developing</option><option value="proficient">Proficient</option><option value="mastering">Mastering</option></select></label>
+            <label class="form-wide">Tutor feedback<textarea id="progressFeedback" rows="3" maxlength="2000"></textarea></label>
+            <label class="form-wide">Practice goal<textarea id="progressGoal" rows="2" maxlength="1000" placeholder="What the student should practise before the next lesson"></textarea></label>
+            <div class="form-actions"><button type="submit">Add progress update</button></div>
+          </form>
+          <div id="progressList" class="management-list"></div>
+        </div>
+      </div>
+    </section>
+    <section id="announcementsPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">ACADEMY COMMUNICATION</p><h2>Student announcements</h2></div><p>Publish clear academy notices, timetable updates, events, and important reminders.</p></div>
+      <form id="announcementForm" class="management-form">
+        <input id="announcementId" type="hidden">
+        <label>Announcement title<input id="announcementTitle" required maxlength="180"></label>
+        <label>Audience<select id="announcementAudience"><option value="students">All signed-in students</option><option value="active_students">Active students</option></select></label>
+        <label>Visibility<select id="announcementPublished"><option value="true">Publish now</option><option value="false">Save as draft</option></select></label>
+        <label class="form-wide">Message<textarea id="announcementBody" required rows="5" maxlength="4000"></textarea></label>
+        <div class="form-actions"><button type="submit">Save announcement</button><button id="cancelAnnouncementEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>
+      </form>
+      <div id="announcementList" class="management-list"></div>
     </section>
   </main>
   <script type="module" src="./src/scripts/portals/applications.js"></script>
