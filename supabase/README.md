@@ -10,6 +10,8 @@ Run `student_operations.sql` after `admin_operations.sql` to allow each authenti
 
 Run `learning_workspace.sql` after `admin_operations.sql` to enable the learning workspace. It adds course materials, tutor progress feedback, lesson attendance, and academy announcements. Students can see only published materials for an approved programme, their own progress entries, and published announcements. Admin/staff manage materials and progress; only the owner-admin manages academy announcements.
 
+Run `student_services.sql` after `learning_workspace.sql` to enable professional student-service workflows. It adds lesson change requests, assignment submissions and tutor review, support tickets, in-portal notifications, and owner-issued invoices. An approved lesson request changes the actual lesson schedule atomically; students cannot edit staff responses, notifications, invoices, or other students’ records.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -30,6 +32,7 @@ Run the existing files in this order:
 7. `admin_operations.sql`
 8. `student_operations.sql`
 9. `learning_workspace.sql`
+10. `student_services.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 

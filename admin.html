@@ -40,6 +40,7 @@
       <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only>Courses</button>
       <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
       <button class="admin-nav-button" type="button" data-panel="learning">Learning</button>
+      <button class="admin-nav-button" type="button" data-panel="services">Student services</button>
       <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
       <button class="admin-nav-button" type="button" data-panel="announcements" data-admin-only>Announcements</button>
     </nav>
@@ -156,6 +157,27 @@
         <div class="form-actions"><button type="submit">Save announcement</button><button id="cancelAnnouncementEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>
       </form>
       <div id="announcementList" class="management-list"></div>
+    </section>
+    <section id="servicesPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">STUDENT SERVICES</p><h2>Requests, submissions, and support</h2></div><p>Respond to student requests in the portal. Decisions remain visible to the student and are never applied silently.</p></div>
+      <div class="learning-admin-grid">
+        <div><h3 class="management-subheading">Lesson-change requests</h3><div id="lessonRequestAdminList" class="management-list"></div></div>
+        <div><h3 class="management-subheading">Support tickets</h3><div id="supportTicketAdminList" class="management-list"></div></div>
+      </div>
+      <section class="service-admin-section"><h3 class="management-subheading">Assignment submissions</h3><div id="assignmentAdminList" class="management-list"></div></section>
+      <section id="invoiceAdminSection" class="service-admin-section" data-admin-only>
+        <h3 class="management-subheading">Invoices</h3>
+        <form id="invoiceForm" class="management-form">
+          <label>Student<select id="invoiceStudent" required></select></label>
+          <label>Invoice number<input id="invoiceNumber" required maxlength="80" placeholder="DSAM-2026-001"></label>
+          <label>Amount (₦)<input id="invoiceAmount" type="number" min="0" step="0.01" required></label>
+          <label>Status<select id="invoiceStatus"><option value="draft">Draft</option><option value="issued">Issued</option><option value="paid">Paid</option><option value="overdue">Overdue</option><option value="void">Void</option></select></label>
+          <label>Due date<input id="invoiceDueAt" type="date"></label>
+          <label class="form-wide">Description<textarea id="invoiceDescription" rows="3" maxlength="1500"></textarea></label>
+          <div class="form-actions"><button type="submit">Save invoice</button></div>
+        </form>
+        <div id="invoiceAdminList" class="management-list"></div>
+      </section>
     </section>
   </main>
   <script type="module" src="./src/scripts/portals/applications.js"></script>

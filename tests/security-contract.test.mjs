@@ -108,3 +108,26 @@ test('student dashboard includes the learning workspace feeds', async () => {
   assert.match(dashboard, /\.from\('student_progress_entries'\)/);
   assert.match(dashboard, /\.from\('academy_announcements'\)/);
 });
+
+test('student services enforce ownership and atomic lesson decisions', async () => {
+  const sql = await read('supabase/student_services.sql');
+
+  assert.match(sql, /create policy "students request changes to own future lessons"[\s\S]*?student_id = auth\.uid\(\)[\s\S]*?starts_at > now\(\)/);
+  assert.match(sql, /create policy "students submit active programme assignments"[\s\S]*?m\.material_type = 'assignment'[\s\S]*?e\.student_id = auth\.uid\(\)[\s\S]*?e\.status = 'active'/);
+  assert.match(sql, /create policy "students create own support tickets"[\s\S]*?auth\.uid\(\) = student_id/);
+  assert.match(sql, /create policy "students read own invoices"[\s\S]*?auth\.uid\(\) = student_id/);
+  assert.match(sql, /create or replace function public\.decide_lesson_change_request[\s\S]*?for update[\s\S]*?update public\.lesson_sessions/);
+  assert.match(sql, /grant update \(is_read\) on public\.student_notifications to authenticated;/);
+  assert.match(sql, /drop policy if exists "students read own lesson change requests"/);
+  assert.match(sql, /drop policy if exists "students mark own notifications read"/);
+});
+
+test('student dashboard provides secure service actions', async () => {
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(dashboard, /\.from\('lesson_change_requests'\)\.insert/);
+  assert.match(dashboard, /\.from\('assignment_submissions'\)\.insert/);
+  assert.match(dashboard, /\.from\('support_tickets'\)\.insert/);
+  assert.match(dashboard, /\.from\('student_notifications'\)/);
+  assert.match(dashboard, /\^https:\\\/\\\//);
+});

@@ -39,6 +39,7 @@ const showPanel = async (panelName) => {
   if (panelName === 'courses') await loadCourses();
   if (panelName === 'lessons') await loadLessons();
   if (panelName === 'learning') await loadLearningWorkspace();
+  if (panelName === 'services') await loadStudentServices();
   if (panelName === 'payments') await loadPayments();
   if (panelName === 'announcements') await loadAnnouncements();
 };
@@ -148,6 +149,7 @@ const renderStudentOptions = () => {
   document.querySelector('#lessonStudent').innerHTML = options;
   document.querySelector('#paymentStudent').innerHTML = options;
   document.querySelector('#progressStudent').innerHTML = options;
+  document.querySelector('#invoiceStudent').innerHTML = options;
 };
 
 const loadProfiles = async () => {
@@ -343,6 +345,52 @@ const loadAnnouncements = async () => {
   announcementList.querySelectorAll('[data-announcement-id]').forEach((button) => button.addEventListener('click', () => openAnnouncementEditor(button.dataset.announcementId)));
 };
 
+const serviceStudentName = (studentId) => {
+  const profile = profiles.find((item) => item.id === studentId);
+  return profile?.full_name || profile?.email || 'Student';
+};
+
+const serviceDecisionForm = (kind, id, statusOptions) => `<form class="service-decision-form" data-service-kind="${kind}" data-service-id="${id}"><label>Status<select name="status">${statusOptions}</select></label><label>Response<textarea name="response" rows="2" maxlength="2000" placeholder="Visible to the student"></textarea></label><button type="submit">Save response</button></form>`;
+
+const loadStudentServices = async () => {
+  const [requestResult, ticketResult, submissionResult, invoiceResult] = await Promise.all([
+    supabase.from('lesson_change_requests').select('id,student_id,request_type,requested_starts_at,reason,status,staff_response,created_at,lesson_sessions(title,starts_at)').order('created_at', { ascending: false }).limit(100),
+    supabase.from('support_tickets').select('id,student_id,category,subject,message,status,staff_response,created_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('assignment_submissions').select('id,student_id,submission_text,resource_url,status,tutor_feedback,submitted_at,learning_materials(title,courses(title))').order('submitted_at', { ascending: false }).limit(100),
+    isAdmin ? supabase.from('invoices').select('id,student_id,invoice_number,amount_ngn,due_at,status,description,created_at').order('created_at', { ascending: false }).limit(100) : Promise.resolve({ data: [] }),
+  ]);
+  const requestList = document.querySelector('#lessonRequestAdminList');
+  const ticketList = document.querySelector('#supportTicketAdminList');
+  const submissionList = document.querySelector('#assignmentAdminList');
+  const invoiceList = document.querySelector('#invoiceAdminList');
+  requestList.innerHTML = requestResult.error ? '<p class="admin-status error">Student services needs the `student_services.sql` migration first.</p>' : (requestResult.data?.length ? requestResult.data.map((request) => `<article class="management-card service-admin-card"><div><p class="card-label">${escapeHtml(request.status).toUpperCase()} · ${escapeHtml(request.request_type).toUpperCase()}</p><h3>${escapeHtml(serviceStudentName(request.student_id))}</h3><p>${escapeHtml(request.lesson_sessions?.title || 'Lesson')} · ${formatDate(request.lesson_sessions?.starts_at || request.created_at)}</p><p>${escapeHtml(request.reason)}</p></div>${serviceDecisionForm('lesson', request.id, `<option value="pending" ${request.status === 'pending' ? 'selected' : ''}>Pending</option><option value="approved" ${request.status === 'approved' ? 'selected' : ''}>Approve</option><option value="declined" ${request.status === 'declined' ? 'selected' : ''}>Decline</option>`)}</article>`).join('') : '<p class="admin-empty">No lesson-change requests yet.</p>');
+  ticketList.innerHTML = ticketResult.error ? '' : (ticketResult.data?.length ? ticketResult.data.map((ticket) => `<article class="management-card service-admin-card"><div><p class="card-label">${escapeHtml(ticket.status).toUpperCase()} · ${escapeHtml(ticket.category).toUpperCase()}</p><h3>${escapeHtml(ticket.subject)}</h3><p>${escapeHtml(serviceStudentName(ticket.student_id))}</p><p>${escapeHtml(ticket.message)}</p></div>${serviceDecisionForm('ticket', ticket.id, `<option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option><option value="in_progress" ${ticket.status === 'in_progress' ? 'selected' : ''}>In progress</option><option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>`)}</article>`).join('') : '<p class="admin-empty">No support tickets yet.</p>');
+  submissionList.innerHTML = submissionResult.error ? '' : (submissionResult.data?.length ? submissionResult.data.map((submission) => `<article class="management-card service-admin-card"><div><p class="card-label">${escapeHtml(submission.status).toUpperCase()}</p><h3>${escapeHtml(submission.learning_materials?.title || 'Assignment')}</h3><p>${escapeHtml(serviceStudentName(submission.student_id))} · ${escapeHtml(submission.learning_materials?.courses?.title || 'Programme')}</p><p>${escapeHtml(submission.submission_text || submission.resource_url || 'Submission received.')}</p></div>${serviceDecisionForm('assignment', submission.id, `<option value="submitted" ${submission.status === 'submitted' ? 'selected' : ''}>Submitted</option><option value="reviewed" ${submission.status === 'reviewed' ? 'selected' : ''}>Reviewed</option><option value="returned" ${submission.status === 'returned' ? 'selected' : ''}>Returned</option>`)}</article>`).join('') : '<p class="admin-empty">No assignment submissions yet.</p>');
+  if (isAdmin) invoiceList.innerHTML = invoiceResult.data?.length ? invoiceResult.data.map((invoice) => `<article class="management-card"><div><p class="card-label">${escapeHtml(invoice.status).toUpperCase()}</p><h3>${escapeHtml(invoice.invoice_number)} · ${formatNaira(invoice.amount_ngn)}</h3><p>${escapeHtml(serviceStudentName(invoice.student_id))} · ${invoice.due_at ? `Due ${new Date(invoice.due_at).toLocaleDateString()}` : 'No due date'}</p><p>${escapeHtml(invoice.description || 'Academy invoice')}</p></div></article>`).join('') : '<p class="admin-empty">No invoices issued yet.</p>';
+  document.querySelectorAll('.service-decision-form').forEach((form) => form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const kind = form.dataset.serviceKind;
+    if (kind === 'lesson') {
+      const { error } = await supabase.rpc('decide_lesson_change_request', { request_id: form.dataset.serviceId, decision: formData.get('status'), response_text: String(formData.get('response') || '').trim() || null });
+      if (error) return showStatus(error.message, true);
+      await loadStudentServices();
+      await loadLessons();
+      showStatus('Lesson request decision saved and the lesson schedule updated when approved.');
+      return;
+    }
+    const table = kind === 'ticket' ? 'support_tickets' : 'assignment_submissions';
+    const responseField = kind === 'assignment' ? 'tutor_feedback' : 'staff_response';
+    const payload = { status: formData.get('status'), [responseField]: String(formData.get('response') || '').trim() || null, updated_at: new Date().toISOString() };
+    if (kind === 'ticket') Object.assign(payload, { responded_at: new Date().toISOString(), responded_by: session.user.id });
+    if (kind === 'assignment') Object.assign(payload, { reviewed_at: new Date().toISOString(), reviewed_by: session.user.id });
+    const { error } = await supabase.from(table).update(payload).eq('id', form.dataset.serviceId);
+    if (error) return showStatus(error.message, true);
+    await loadStudentServices();
+    showStatus('Student service response saved.');
+  }));
+};
+
 const bindForms = () => {
   document.querySelector('#studentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -478,6 +526,23 @@ const bindForms = () => {
     showStatus(`Announcement ${announcementId ? 'updated' : 'saved'}.`);
   });
   document.querySelector('#cancelAnnouncementEdit').addEventListener('click', resetAnnouncementForm);
+  document.querySelector('#invoiceForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const payload = {
+      student_id: document.querySelector('#invoiceStudent').value,
+      invoice_number: document.querySelector('#invoiceNumber').value.trim(),
+      amount_ngn: Number(document.querySelector('#invoiceAmount').value),
+      status: document.querySelector('#invoiceStatus').value,
+      due_at: document.querySelector('#invoiceDueAt').value || null,
+      description: document.querySelector('#invoiceDescription').value.trim() || null,
+      created_by: session.user.id,
+    };
+    const { error } = await supabase.from('invoices').insert(payload);
+    if (error) return showStatus(error.message, true);
+    event.currentTarget.reset();
+    await loadStudentServices();
+    showStatus('Invoice saved.');
+  });
 };
 
 const { data: { session } } = await supabase.auth.getSession();

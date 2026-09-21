@@ -26,6 +26,14 @@ if (!session) {
   const learningMaterialList = document.querySelector('#learningMaterialList');
   const progressEntryList = document.querySelector('#progressEntryList');
   const announcementFeed = document.querySelector('#announcementFeed');
+  const requestLesson = document.querySelector('#requestLesson');
+  const lessonRequestList = document.querySelector('#lessonRequestList');
+  const ticketList = document.querySelector('#ticketList');
+  const assignmentMaterial = document.querySelector('#assignmentMaterial');
+  const assignmentList = document.querySelector('#assignmentList');
+  const invoiceList = document.querySelector('#invoiceList');
+  const notificationList = document.querySelector('#notificationList');
+  const markNotificationsRead = document.querySelector('#markNotificationsRead');
 
   document.querySelector('#studentName').textContent = `Welcome, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
   document.querySelector('#signOutButton').onclick = async () => {
@@ -98,7 +106,7 @@ if (!session) {
   async function loadLessons() {
     let result = await supabase
       .from('lesson_sessions')
-      .select('starts_at,instructor,location,title,status,attendance_status,courses(title)')
+      .select('id,starts_at,instructor,location,title,status,attendance_status,courses(title)')
       .eq('student_id', user.id)
       .gte('starts_at', new Date().toISOString())
       .order('starts_at')
@@ -116,6 +124,8 @@ if (!session) {
 
     const lessons = result.data || [];
     if (!lessons.length) return;
+
+    requestLesson.innerHTML = ['<option value="">Select an upcoming lesson</option>', ...lessons.map((lesson) => `<option value="${lesson.id}">${escapeHtml(lesson.title || lesson.courses?.title || 'Lesson')} · ${new Date(lesson.starts_at).toLocaleString()}</option>`)].join('');
 
     const next = new Date(lessons[0].starts_at);
     document.querySelector('#lessonDate').textContent = formatDate(next, { weekday: 'long', month: 'short', day: 'numeric' });
@@ -162,6 +172,8 @@ if (!session) {
       .limit(12);
 
     if (error || !data?.length) return;
+    const assignments = data.filter((material) => material.material_type === 'assignment');
+    if (assignments.length) assignmentMaterial.innerHTML = ['<option value="">Select an assignment</option>', ...assignments.map((material) => `<option value="${material.id}">${escapeHtml(material.title)} · ${escapeHtml(material.courses?.title || 'Programme')}</option>`)].join('');
     learningMaterialList.innerHTML = data.map((material) => {
       const safeUrl = /^https:\/\//i.test(material.resource_url || '') ? material.resource_url : '';
       const action = safeUrl ? `<a class="dashboard-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">Open resource →</a>` : '';
@@ -191,5 +203,94 @@ if (!session) {
     announcementFeed.innerHTML = data.map((announcement) => `<article class="announcement-entry"><div><h3>${escapeHtml(announcement.title)}</h3><p>${escapeHtml(announcement.body)}</p></div><span>${formatDate(announcement.published_at)}</span></article>`).join('');
   }
 
-  await Promise.all([loadProfile(), loadEnrolments(), loadLessons(), loadPayments(), loadLearningMaterials(), loadProgressEntries(), loadAnnouncements()]);
+  const renderHistory = (element, rows, render, emptyMessage) => {
+    element.innerHTML = rows?.length ? rows.map(render).join('') : `<p>${emptyMessage}</p>`;
+  };
+
+  async function loadLessonRequests() {
+    const { data, error } = await supabase.from('lesson_change_requests').select('request_type,requested_starts_at,reason,status,staff_response,created_at,lesson_sessions(title,starts_at)').order('created_at', { ascending: false }).limit(10);
+    if (error) return;
+    renderHistory(lessonRequestList, data, (request) => `<article class="service-entry"><div><strong>${escapeHtml(request.request_type === 'cancel' ? 'Cancellation request' : 'Reschedule request')}</strong><span>${escapeHtml(request.lesson_sessions?.title || 'Lesson')} · ${formatDate(request.lesson_sessions?.starts_at || request.created_at)}</span><p>${escapeHtml(request.reason)}</p>${request.staff_response ? `<p><strong>Academy response:</strong> ${escapeHtml(request.staff_response)}</p>` : ''}</div><span class="service-badge ${escapeHtml(request.status)}">${escapeHtml(request.status)}</span></article>`, 'No lesson-change requests yet.');
+  }
+
+  async function loadSupportTickets() {
+    const { data, error } = await supabase.from('support_tickets').select('category,subject,message,status,staff_response,created_at').order('created_at', { ascending: false }).limit(10);
+    if (error) return;
+    renderHistory(ticketList, data, (ticket) => `<article class="service-entry"><div><strong>${escapeHtml(ticket.subject)}</strong><span>${escapeHtml(ticket.category)} · ${formatDate(ticket.created_at)}</span><p>${escapeHtml(ticket.message)}</p>${ticket.staff_response ? `<p><strong>Academy response:</strong> ${escapeHtml(ticket.staff_response)}</p>` : ''}</div><span class="service-badge ${escapeHtml(ticket.status)}">${escapeHtml(ticket.status.replace('_', ' '))}</span></article>`, 'No support requests yet.');
+  }
+
+  async function loadAssignments() {
+    const { data, error } = await supabase.from('assignment_submissions').select('submission_text,resource_url,status,tutor_feedback,submitted_at,learning_materials(title,courses(title))').order('submitted_at', { ascending: false }).limit(10);
+    if (error) return;
+    renderHistory(assignmentList, data, (submission) => `<article class="service-entry"><div><strong>${escapeHtml(submission.learning_materials?.title || 'Assignment')}</strong><span>${escapeHtml(submission.learning_materials?.courses?.title || 'Programme')} · ${formatDate(submission.submitted_at)}</span><p>${escapeHtml(submission.submission_text || 'Link submitted.')}</p>${submission.tutor_feedback ? `<p><strong>Tutor feedback:</strong> ${escapeHtml(submission.tutor_feedback)}</p>` : ''}</div><span class="service-badge ${escapeHtml(submission.status)}">${escapeHtml(submission.status)}</span></article>`, 'No assignment submissions yet.');
+  }
+
+  async function loadInvoices() {
+    const { data, error } = await supabase.from('invoices').select('invoice_number,amount_ngn,due_at,status,description,created_at').order('created_at', { ascending: false }).limit(10);
+    if (error) return;
+    renderHistory(invoiceList, data, (invoice) => `<article class="payment-row"><div><strong>${formatMoney(invoice.amount_ngn)}</strong><span>${escapeHtml(invoice.invoice_number)} · ${invoice.due_at ? `Due ${formatDate(invoice.due_at)}` : 'No due date'}</span><span>${escapeHtml(invoice.description || 'Academy invoice')}</span></div><span class="payment-status ${escapeHtml(invoice.status)}">${escapeHtml(invoice.status)}</span></article>`, 'No invoices have been issued yet.');
+  }
+
+  async function loadNotifications() {
+    const { data, error } = await supabase.from('student_notifications').select('id,title,message,category,is_read,created_at').order('created_at', { ascending: false }).limit(12);
+    if (error || !data?.length) return;
+    notificationList.innerHTML = data.map((notification) => `<article class="notification-entry ${notification.is_read ? '' : 'unread'}"><div><p class="card-label">${escapeHtml(notification.category)}</p><h3>${escapeHtml(notification.title)}</h3><p>${escapeHtml(notification.message)}</p></div><span>${formatDate(notification.created_at)}</span></article>`).join('');
+    markNotificationsRead.hidden = !data.some((notification) => !notification.is_read);
+  }
+
+  const setServiceStatus = (id, message, error = false) => {
+    const element = document.querySelector(id);
+    element.textContent = message;
+    element.className = `service-status${error ? ' error' : ' success'}`;
+  };
+
+  document.querySelector('#requestType').addEventListener('change', (event) => {
+    const isReschedule = event.target.value === 'reschedule';
+    document.querySelector('#requestedTimeField').hidden = !isReschedule;
+    document.querySelector('#requestedStartsAt').required = isReschedule;
+  });
+
+  document.querySelector('#lessonRequestForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const requestType = document.querySelector('#requestType').value;
+    const requestedValue = document.querySelector('#requestedStartsAt').value;
+    if (requestType === 'reschedule' && new Date(requestedValue) <= new Date()) return setServiceStatus('#lessonRequestStatus', 'Choose a future preferred time.', true);
+    const { error } = await supabase.from('lesson_change_requests').insert({ lesson_session_id: requestLesson.value, student_id: user.id, request_type: requestType, requested_starts_at: requestType === 'reschedule' ? new Date(requestedValue).toISOString() : null, reason: document.querySelector('#requestReason').value.trim() });
+    if (error) return setServiceStatus('#lessonRequestStatus', error.message, true);
+    event.currentTarget.reset();
+    setServiceStatus('#lessonRequestStatus', 'Request sent to the academy team.');
+    await loadLessonRequests();
+  });
+
+  document.querySelector('#supportTicketForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const { error } = await supabase.from('support_tickets').insert({ student_id: user.id, category: document.querySelector('#ticketCategory').value, subject: document.querySelector('#ticketSubject').value.trim(), message: document.querySelector('#ticketMessage').value.trim() });
+    if (error) return setServiceStatus('#ticketStatus', error.message, true);
+    event.currentTarget.reset();
+    setServiceStatus('#ticketStatus', 'Support request sent.');
+    await loadSupportTickets();
+  });
+
+  document.querySelector('#assignmentForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const resourceUrl = document.querySelector('#assignmentUrl').value.trim();
+    if (resourceUrl && !/^https:\/\//i.test(resourceUrl)) return setServiceStatus('#assignmentStatus', 'Use a secure https:// link.', true);
+    const submissionText = document.querySelector('#assignmentText').value.trim();
+    if (!submissionText && !resourceUrl) return setServiceStatus('#assignmentStatus', 'Add a written submission or secure link.', true);
+    const { error } = await supabase.from('assignment_submissions').insert({ material_id: assignmentMaterial.value, student_id: user.id, submission_text: submissionText || null, resource_url: resourceUrl || null });
+    if (error) return setServiceStatus('#assignmentStatus', error.message, true);
+    event.currentTarget.reset();
+    setServiceStatus('#assignmentStatus', 'Assignment submitted for review.');
+    await loadAssignments();
+  });
+
+  markNotificationsRead.addEventListener('click', async () => {
+    markNotificationsRead.disabled = true;
+    const { error } = await supabase.from('student_notifications').update({ is_read: true }).eq('student_id', user.id).eq('is_read', false);
+    markNotificationsRead.disabled = false;
+    if (error) return;
+    await loadNotifications();
+  });
+
+  await Promise.all([loadProfile(), loadEnrolments(), loadLessons(), loadPayments(), loadLearningMaterials(), loadProgressEntries(), loadAnnouncements(), loadLessonRequests(), loadSupportTickets(), loadAssignments(), loadInvoices(), loadNotifications()]);
 }

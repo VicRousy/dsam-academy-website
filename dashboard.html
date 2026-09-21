@@ -27,6 +27,10 @@
       <h1 id="studentName">Welcome</h1>
       <p id="studentWelcome">Keep track of your programme, lessons, and payments in one place.</p>
     </section>
+    <section class="dashboard-card notification-card">
+      <div class="student-section-heading"><div><p class="card-label">NOTIFICATIONS</p><h2>Updates from the academy</h2></div><button id="markNotificationsRead" class="details-button" type="button" hidden>Mark all read</button></div>
+      <div id="notificationList" class="notification-list"><p>No new notifications.</p></div>
+    </section>
     <section class="dashboard-grid">
       <article class="dashboard-card">
         <p class="card-label">YOUR APPLICATION</p>
@@ -77,6 +81,29 @@
       </div>
       <div id="scheduleList" class="schedule-list"><p>No upcoming lessons yet.</p></div>
     </section>
+    <section class="student-services-grid">
+      <section class="dashboard-card service-card">
+        <div><p class="card-label">LESSON CHANGES</p><h2>Request a change</h2><p>Send a request for an upcoming lesson. Your tutor must approve it before anything changes.</p></div>
+        <form id="lessonRequestForm" class="student-service-form">
+          <label>Upcoming lesson<select id="requestLesson" required><option value="">No upcoming lessons available</option></select></label>
+          <label>Request<select id="requestType"><option value="reschedule">Reschedule lesson</option><option value="cancel">Cancel lesson</option></select></label>
+          <label id="requestedTimeField">Preferred new date and time<input id="requestedStartsAt" type="datetime-local"></label>
+          <label>Reason<textarea id="requestReason" rows="3" minlength="5" maxlength="1500" required></textarea></label>
+          <button type="submit">Send request</button><p id="lessonRequestStatus" class="service-status" role="status"></p>
+        </form>
+        <div id="lessonRequestList" class="service-history"><p>No lesson-change requests yet.</p></div>
+      </section>
+      <section class="dashboard-card service-card">
+        <div><p class="card-label">STUDENT SUPPORT</p><h2>Open a support request</h2><p>Use this for payment, lesson, technical, or general support. The academy response stays in your portal.</p></div>
+        <form id="supportTicketForm" class="student-service-form">
+          <label>Category<select id="ticketCategory"><option value="general">General support</option><option value="lesson">Lesson support</option><option value="payment">Payment support</option><option value="technical">Technical support</option></select></label>
+          <label>Subject<input id="ticketSubject" minlength="3" maxlength="180" required></label>
+          <label>Message<textarea id="ticketMessage" rows="4" minlength="5" maxlength="4000" required></textarea></label>
+          <button type="submit">Send support request</button><p id="ticketStatus" class="service-status" role="status"></p>
+        </form>
+        <div id="ticketList" class="service-history"><p>No support requests yet.</p></div>
+      </section>
+    </section>
     <section class="student-learning-grid">
       <section class="dashboard-card learning-feed-card">
         <div><p class="card-label">LEARNING MATERIALS</p><h2>Your programme resources</h2><p>Resources shared by your tutor appear here after your enrolment is active.</p></div>
@@ -87,6 +114,16 @@
         <div id="progressEntryList" class="learning-feed-list"><p>No progress updates yet.</p></div>
       </section>
     </section>
+    <section class="dashboard-card assignment-card">
+      <div><p class="card-label">ASSIGNMENTS</p><h2>Submit your work</h2><p>Submit a written update or secure link for assignments shared in your programme.</p></div>
+      <form id="assignmentForm" class="student-service-form assignment-form">
+        <label>Assignment<select id="assignmentMaterial" required><option value="">No assignments available</option></select></label>
+        <label>Submission link (optional)<input id="assignmentUrl" type="url" maxlength="1000" placeholder="https://..."></label>
+        <label class="service-wide">Your submission<textarea id="assignmentText" rows="4" maxlength="5000" placeholder="Describe your completed work, practice, or performance."></textarea></label>
+        <button type="submit">Submit assignment</button><p id="assignmentStatus" class="service-status" role="status"></p>
+      </form>
+      <div id="assignmentList" class="service-history"><p>No assignment submissions yet.</p></div>
+    </section>
     <section class="dashboard-card payment-history">
       <div>
         <p class="card-label">PAYMENT HISTORY</p>
@@ -94,6 +131,10 @@
         <p>Payments are recorded by the academy after confirmation.</p>
       </div>
       <div id="paymentList" class="payment-list"><p>No payment records yet.</p></div>
+    </section>
+    <section class="dashboard-card invoice-card">
+      <div><p class="card-label">INVOICES</p><h2>Your academy invoices</h2><p>Invoices are issued by the academy. Online payment can be connected later without changing your records.</p></div>
+      <div id="invoiceList" class="payment-list"><p>No invoices have been issued yet.</p></div>
     </section>
     <section class="dashboard-card announcement-card">
       <div><p class="card-label">ACADEMY NOTICES</p><h2>Latest announcements</h2><p>Important academy updates, events, and reminders.</p></div>
