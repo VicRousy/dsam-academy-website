@@ -652,6 +652,7 @@ img, video, iframe { max-width: 100%; }
 .student-panel[hidden] { display:none; }
 .classroom-delivery-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:18px; }
 .classroom-entry .dashboard-link { display:inline-block; margin-top:12px; }
+.classroom-entry .classroom-calendar-link { margin-left:14px; }
 @media (max-width:900px) {
   .student-workspace { grid-template-columns:1fr; }
   .student-menu-toggle { display:flex; margin:0 0 14px; }
@@ -659,4 +660,5 @@ img, video, iframe { max-width: 100%; }
   .student-sidebar.is-open { display:grid; }
 }
 @media (max-width:720px) { .classroom-delivery-grid { grid-template-columns:1fr; } }
+@media (max-width:460px) { .classroom-entry .classroom-calendar-link { display:block; margin-left:0; } }
 @media (max-width:460px) { .student-sidebar { grid-template-columns:1fr; } }

@@ -14,6 +14,8 @@ Run `student_services.sql` after `learning_workspace.sql` to enable professional
 
 Run `classroom_delivery.sql` after `learning_workspace.sql` to enable live classes and tutorial recordings. Staff provide the secure HTTPS link from their chosen platform—such as Zoom, Google Meet, YouTube, Vimeo, or Teams—and publish it only to the relevant programme. Only students with an active enrolment in that programme can open it.
 
+Run `classroom_operations.sql` after `classroom_delivery.sql` and `student_services.sql`. It creates classroom notifications for active students and records when a student opens an eligible classroom item, so staff can review access without treating an access click as confirmed attendance.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -36,6 +38,7 @@ Run the existing files in this order:
 9. `learning_workspace.sql`
 10. `student_services.sql`
 11. `classroom_delivery.sql`
+12. `classroom_operations.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 

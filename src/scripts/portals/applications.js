@@ -25,6 +25,7 @@ let privateNotes = new Map();
 let learningMaterials = [];
 let announcements = [];
 let classroomSessions = [];
+let classroomAccessStats = new Map();
 let isAdmin = false;
 let pendingStaffCount = 0;
 
@@ -293,8 +294,24 @@ const loadClassroom = async () => {
   }
 
   classroomSessions = data || [];
+  const { data: accessEvents } = await supabase
+    .from('classroom_access_events')
+    .select('classroom_session_id,student_id,accessed_at')
+    .order('accessed_at', { ascending: false })
+    .limit(1000);
+  classroomAccessStats = new Map();
+  (accessEvents || []).forEach((accessEvent) => {
+    const current = classroomAccessStats.get(accessEvent.classroom_session_id) || { students: new Set(), latestAccess: null };
+    current.students.add(accessEvent.student_id);
+    if (!current.latestAccess || new Date(accessEvent.accessed_at) > new Date(current.latestAccess)) current.latestAccess = accessEvent.accessed_at;
+    classroomAccessStats.set(accessEvent.classroom_session_id, current);
+  });
   classroomList.innerHTML = classroomSessions.length
-    ? classroomSessions.map((classroomSession) => `<article class="management-card"><div><p class="card-label">${escapeHtml(classroomSession.delivery_type).toUpperCase()} · ${classroomSession.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.courses?.title || 'Programme')} · ${formatDate(classroomSession.starts_at)}</p><p>${escapeHtml(classroomSession.provider || 'other').replaceAll('_', ' ')}${classroomSession.description ? ` · ${escapeHtml(classroomSession.description)}` : ''}</p></div><button class="details-button" data-classroom-id="${classroomSession.id}" type="button">Edit</button></article>`).join('')
+    ? classroomSessions.map((classroomSession) => {
+      const access = classroomAccessStats.get(classroomSession.id);
+      const accessSummary = access ? `${access.students.size} student${access.students.size === 1 ? '' : 's'} opened this item${access.latestAccess ? ` · Last opened ${formatDate(access.latestAccess)}` : ''}` : 'No student access recorded yet';
+      return `<article class="management-card"><div><p class="card-label">${escapeHtml(classroomSession.delivery_type).toUpperCase()} · ${classroomSession.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.courses?.title || 'Programme')} · ${formatDate(classroomSession.starts_at)}</p><p>${escapeHtml(classroomSession.provider || 'other').replaceAll('_', ' ')}${classroomSession.description ? ` · ${escapeHtml(classroomSession.description)}` : ''}</p><p>${escapeHtml(accessSummary)}</p></div><button class="details-button" data-classroom-id="${classroomSession.id}" type="button">Edit</button></article>`;
+    }).join('')
     : '<p class="admin-empty">No live classes or recordings have been added yet.</p>';
   classroomList.querySelectorAll('[data-classroom-id]').forEach((button) => button.addEventListener('click', () => openClassroomEditor(button.dataset.classroomId)));
 };

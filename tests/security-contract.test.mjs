@@ -152,3 +152,20 @@ test('student portal separates classroom delivery into accessible sections', asy
   assert.match(dashboard, /\.from\('classroom_sessions'\)/);
   assert.match(dashboard, /showStudentPanel/);
 });
+
+test('classroom operations notify eligible students and protect access events', async () => {
+  const sql = await read('supabase/classroom_operations.sql');
+
+  assert.match(sql, /student_notifications_category_check[\s\S]*?'classroom'/);
+  assert.match(sql, /create policy "students log own published classroom access"[\s\S]*?auth\.uid\(\) = student_id[\s\S]*?classroom_sessions\.is_published[\s\S]*?enrollments\.status = 'active'/);
+  assert.match(sql, /create policy "staff read classroom access events"[\s\S]*?using \(public\.is_staff\(\)\)/);
+  assert.match(sql, /create or replace function public\.notify_students_of_classroom_session[\s\S]*?insert into public\.student_notifications/);
+});
+
+test('student classroom provides a calendar download and records access attempts', async () => {
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(dashboard, /BEGIN:VCALENDAR/);
+  assert.match(dashboard, /classroom_access_events/);
+  assert.match(dashboard, /download="\$\{escapeHtml\(classroomSession\.title/);
+});

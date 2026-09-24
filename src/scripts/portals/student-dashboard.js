@@ -165,7 +165,7 @@ if (!session) {
   async function loadClassroom() {
     const { data, error } = await supabase
       .from('classroom_sessions')
-      .select('title,description,delivery_type,provider,starts_at,ends_at,join_url,recording_url,courses(title)')
+      .select('id,title,description,delivery_type,provider,starts_at,ends_at,join_url,recording_url,courses(title)')
       .order('starts_at', { ascending: false })
       .limit(30);
 
@@ -174,17 +174,30 @@ if (!session) {
     const now = new Date();
     const liveClasses = data.filter((classroomSession) => classroomSession.delivery_type === 'live' && (!classroomSession.ends_at ? new Date(classroomSession.starts_at) >= now : new Date(classroomSession.ends_at) >= now));
     const recordings = data.filter((classroomSession) => classroomSession.delivery_type === 'recording');
+    const toCalendarDate = (value) => new Date(value).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+    const escapeCalendarText = (value) => String(value || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+    const buildCalendarLink = (classroomSession) => {
+      const end = classroomSession.ends_at || new Date(new Date(classroomSession.starts_at).getTime() + 60 * 60 * 1000).toISOString();
+      const classUrl = classroomSession.join_url || '';
+      const calendar = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//DSAM Academy//Student Portal//EN', 'BEGIN:VEVENT', `UID:${classroomSession.id}@dsam-academy`, `DTSTART:${toCalendarDate(classroomSession.starts_at)}`, `DTEND:${toCalendarDate(end)}`, `SUMMARY:${escapeCalendarText(classroomSession.title)}`, `DESCRIPTION:${escapeCalendarText(classroomSession.description || 'DSAM Academy live class')}`, `URL:${escapeCalendarText(classUrl)}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      return `data:text/calendar;charset=utf-8,${encodeURIComponent(calendar)}`;
+    };
+    const logClassroomAccess = async (classroomSessionId) => {
+      await supabase.from('classroom_access_events').insert({ classroom_session_id: classroomSessionId, student_id: user.id });
+    };
     const renderClassroomItems = (sessions, type) => sessions.length ? sessions.map((classroomSession) => {
       const url = type === 'live' ? classroomSession.join_url : classroomSession.recording_url;
       const safeUrl = /^https:\/\//i.test(url || '') ? url : '';
-      const action = safeUrl ? `<a class="dashboard-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${type === 'live' ? 'Join live class →' : 'Watch tutorial →'}</a>` : '';
+      const action = safeUrl ? `<a class="dashboard-link" data-classroom-access="${classroomSession.id}" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${type === 'live' ? 'Join live class →' : 'Watch tutorial →'}</a>` : '';
       const provider = escapeHtml((classroomSession.provider || 'academy').replaceAll('_', ' '));
       const schedule = type === 'live' ? `${formatDateTime(classroomSession.starts_at)}${classroomSession.ends_at ? ` – ${new Date(classroomSession.ends_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}` : `Published tutorial · ${provider}`;
-      return `<article class="learning-entry classroom-entry"><p class="card-label">${type === 'live' ? 'LIVE CLASS' : 'RECORDING'} · ${escapeHtml(classroomSession.courses?.title || 'Programme')}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.description || (type === 'live' ? 'Your academy team has scheduled this class.' : 'A tutorial from your academy team.'))}</p><span>${schedule}</span>${action}</article>`;
+      const calendarAction = type === 'live' ? `<a class="dashboard-link classroom-calendar-link" href="${buildCalendarLink(classroomSession)}" download="${escapeHtml(classroomSession.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'dsam-live-class')}.ics">Add to calendar ↓</a>` : '';
+      return `<article class="learning-entry classroom-entry"><p class="card-label">${type === 'live' ? 'LIVE CLASS' : 'RECORDING'} · ${escapeHtml(classroomSession.courses?.title || 'Programme')}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.description || (type === 'live' ? 'Your academy team has scheduled this class.' : 'A tutorial from your academy team.'))}</p><span>${schedule}</span>${action}${calendarAction}</article>`;
     }).join('') : `<p>${type === 'live' ? 'No live classes are scheduled for your programme.' : 'No tutorial recordings have been shared yet.'}</p>`;
 
     classroomLiveList.innerHTML = renderClassroomItems(liveClasses, 'live');
     classroomRecordingList.innerHTML = renderClassroomItems(recordings, 'recording');
+    document.querySelectorAll('[data-classroom-access]').forEach((link) => link.addEventListener('click', () => { void logClassroomAccess(link.dataset.classroomAccess); }));
   }
 
   async function loadPayments() {
