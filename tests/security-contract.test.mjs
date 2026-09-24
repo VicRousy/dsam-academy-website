@@ -131,3 +131,24 @@ test('student dashboard provides secure service actions', async () => {
   assert.match(dashboard, /\.from\('student_notifications'\)/);
   assert.match(dashboard, /\^https:\\\/\\\//);
 });
+
+test('classroom delivery is restricted to active students in the matching programme', async () => {
+  const sql = await read('supabase/classroom_delivery.sql');
+
+  assert.match(sql, /alter table public\.classroom_sessions enable row level security;/);
+  assert.match(sql, /create policy "students read published programme classroom sessions"[\s\S]*?is_published[\s\S]*?enrollments\.student_id = auth\.uid\(\)[\s\S]*?enrollments\.course_id = classroom_sessions\.course_id[\s\S]*?enrollments\.status = 'active'/);
+  assert.match(sql, /create policy "staff manage classroom sessions"[\s\S]*?using \(public\.is_staff\(\)\)/);
+  assert.match(sql, /check \(join_url is null or join_url ~\* '\^https:\/\/'\)/);
+});
+
+test('student portal separates classroom delivery into accessible sections', async () => {
+  const markup = await read('dashboard.html');
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(markup, /id="studentMenuToggle"/);
+  assert.match(markup, /data-student-panel="classroom"/);
+  assert.match(markup, /id="classroomLiveList"/);
+  assert.match(markup, /id="classroomRecordingList"/);
+  assert.match(dashboard, /\.from\('classroom_sessions'\)/);
+  assert.match(dashboard, /showStudentPanel/);
+});

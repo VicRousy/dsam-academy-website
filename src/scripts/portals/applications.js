@@ -24,6 +24,7 @@ let courses = [];
 let privateNotes = new Map();
 let learningMaterials = [];
 let announcements = [];
+let classroomSessions = [];
 let isAdmin = false;
 let pendingStaffCount = 0;
 
@@ -38,6 +39,7 @@ const showPanel = async (panelName) => {
   if (panelName === 'students') renderStudents();
   if (panelName === 'courses') await loadCourses();
   if (panelName === 'lessons') await loadLessons();
+  if (panelName === 'classroom') await loadClassroom();
   if (panelName === 'learning') await loadLearningWorkspace();
   if (panelName === 'services') await loadStudentServices();
   if (panelName === 'payments') await loadPayments();
@@ -211,6 +213,7 @@ const loadCourses = async () => {
   document.querySelector('#lessonCourse').innerHTML = ['<option value="">No programme selected</option>', ...courses.filter((course) => course.is_active).map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
   document.querySelector('#materialCourse').innerHTML = ['<option value="">Select a programme</option>', ...courses.map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
   document.querySelector('#progressCourse').innerHTML = ['<option value="">No programme selected</option>', ...courses.map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
+  document.querySelector('#classroomCourse').innerHTML = ['<option value="">Select a programme</option>', ...courses.filter((course) => course.is_active).map((course) => `<option value="${course.id}">${escapeHtml(course.title)}</option>`)].join('');
   courseList.innerHTML = courses.length ? courses.map((course) => `<article class="management-card"><div><p class="card-label">${course.is_active ? 'OPEN FOR ENROLMENT' : 'ARCHIVED'}</p><h3>${escapeHtml(course.title)}</h3><p>${escapeHtml(course.description || 'No description added.')}</p><p>${course.duration_weeks ? `${course.duration_weeks} weeks` : 'Duration not set'} · ${course.tuition_ngn === null ? 'Tuition not set' : formatNaira(course.tuition_ngn)}</p></div><button class="details-button" data-course-id="${course.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No programmes have been added yet.</p>';
   courseList.querySelectorAll('[data-course-id]').forEach((button) => button.addEventListener('click', () => openCourseEditor(button.dataset.courseId)));
 };
@@ -231,6 +234,69 @@ const resetCourseForm = () => {
   document.querySelector('#courseForm').reset();
   document.querySelector('#courseId').value = '';
   document.querySelector('#cancelCourseEdit').hidden = true;
+};
+
+const toDateTimeLocal = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 16);
+};
+
+const toggleClassroomFields = () => {
+  const isLive = document.querySelector('#classroomType').value === 'live';
+  document.querySelector('#classroomJoinField').hidden = !isLive;
+  document.querySelector('#classroomRecordingField').hidden = isLive;
+  document.querySelector('#classroomEndsField').hidden = !isLive;
+  document.querySelector('#classroomJoinUrl').required = isLive;
+  document.querySelector('#classroomRecordingUrl').required = !isLive;
+};
+
+const resetClassroomForm = () => {
+  document.querySelector('#classroomForm').reset();
+  document.querySelector('#classroomId').value = '';
+  document.querySelector('#cancelClassroomEdit').hidden = true;
+  toggleClassroomFields();
+};
+
+const openClassroomEditor = (classroomId) => {
+  const classroomSession = classroomSessions.find((item) => item.id === classroomId);
+  if (!classroomSession) return;
+  document.querySelector('#classroomId').value = classroomSession.id;
+  document.querySelector('#classroomCourse').value = classroomSession.course_id;
+  document.querySelector('#classroomType').value = classroomSession.delivery_type;
+  document.querySelector('#classroomProvider').value = classroomSession.provider || 'other';
+  document.querySelector('#classroomStartsAt').value = toDateTimeLocal(classroomSession.starts_at);
+  document.querySelector('#classroomEndsAt').value = toDateTimeLocal(classroomSession.ends_at);
+  document.querySelector('#classroomTitle').value = classroomSession.title || '';
+  document.querySelector('#classroomJoinUrl').value = classroomSession.join_url || '';
+  document.querySelector('#classroomRecordingUrl').value = classroomSession.recording_url || '';
+  document.querySelector('#classroomDescription').value = classroomSession.description || '';
+  document.querySelector('#classroomPublished').value = String(classroomSession.is_published);
+  document.querySelector('#cancelClassroomEdit').hidden = false;
+  toggleClassroomFields();
+  document.querySelector('#classroomForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const loadClassroom = async () => {
+  await loadCourses();
+  const classroomList = document.querySelector('#classroomList');
+  const { data, error } = await supabase
+    .from('classroom_sessions')
+    .select('id,course_id,title,description,delivery_type,provider,starts_at,ends_at,join_url,recording_url,is_published,courses(title)')
+    .order('starts_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    classroomList.innerHTML = '<p class="admin-status error">Classroom delivery needs the `classroom_delivery.sql` migration to be run in Supabase first.</p>';
+    return;
+  }
+
+  classroomSessions = data || [];
+  classroomList.innerHTML = classroomSessions.length
+    ? classroomSessions.map((classroomSession) => `<article class="management-card"><div><p class="card-label">${escapeHtml(classroomSession.delivery_type).toUpperCase()} · ${classroomSession.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.courses?.title || 'Programme')} · ${formatDate(classroomSession.starts_at)}</p><p>${escapeHtml(classroomSession.provider || 'other').replaceAll('_', ' ')}${classroomSession.description ? ` · ${escapeHtml(classroomSession.description)}` : ''}</p></div><button class="details-button" data-classroom-id="${classroomSession.id}" type="button">Edit</button></article>`).join('')
+    : '<p class="admin-empty">No live classes or recordings have been added yet.</p>';
+  classroomList.querySelectorAll('[data-classroom-id]').forEach((button) => button.addEventListener('click', () => openClassroomEditor(button.dataset.classroomId)));
 };
 
 const loadLessons = async () => {
@@ -435,6 +501,40 @@ const bindForms = () => {
     showStatus(`Programme ${courseId ? 'updated' : 'created'}.`);
   });
   document.querySelector('#cancelCourseEdit').addEventListener('click', resetCourseForm);
+  document.querySelector('#classroomType').addEventListener('change', toggleClassroomFields);
+  toggleClassroomFields();
+  document.querySelector('#classroomForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const classroomId = document.querySelector('#classroomId').value;
+    const deliveryType = document.querySelector('#classroomType').value;
+    const startsAt = document.querySelector('#classroomStartsAt').value;
+    const endsAt = document.querySelector('#classroomEndsAt').value;
+    const accessUrl = (deliveryType === 'live' ? document.querySelector('#classroomJoinUrl') : document.querySelector('#classroomRecordingUrl')).value.trim();
+    if (!/^https:\/\//i.test(accessUrl)) return showStatus('Use a secure https:// classroom link.', true);
+    if (deliveryType === 'live' && endsAt && new Date(endsAt) <= new Date(startsAt)) return showStatus('The class end time must be after its start time.', true);
+    const payload = {
+      course_id: document.querySelector('#classroomCourse').value,
+      title: document.querySelector('#classroomTitle').value.trim(),
+      description: document.querySelector('#classroomDescription').value.trim() || null,
+      delivery_type: deliveryType,
+      provider: document.querySelector('#classroomProvider').value,
+      starts_at: new Date(startsAt).toISOString(),
+      ends_at: deliveryType === 'live' && endsAt ? new Date(endsAt).toISOString() : null,
+      join_url: deliveryType === 'live' ? accessUrl : null,
+      recording_url: deliveryType === 'recording' ? accessUrl : null,
+      is_published: document.querySelector('#classroomPublished').value === 'true',
+      updated_at: new Date().toISOString(),
+    };
+    const request = classroomId
+      ? supabase.from('classroom_sessions').update(payload).eq('id', classroomId)
+      : supabase.from('classroom_sessions').insert({ ...payload, created_by: session.user.id });
+    const { error } = await request;
+    if (error) return showStatus(error.message, true);
+    resetClassroomForm();
+    await loadClassroom();
+    showStatus(`Classroom ${classroomId ? 'item updated' : 'item saved'}.`);
+  });
+  document.querySelector('#cancelClassroomEdit').addEventListener('click', resetClassroomForm);
   document.querySelector('#lessonForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const payload = {

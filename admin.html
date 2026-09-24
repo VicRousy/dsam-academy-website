@@ -39,6 +39,7 @@
       <button class="admin-nav-button" type="button" data-panel="students">Students</button>
       <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only>Courses</button>
       <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
+      <button class="admin-nav-button" type="button" data-panel="classroom">Classroom</button>
       <button class="admin-nav-button" type="button" data-panel="learning">Learning</button>
       <button class="admin-nav-button" type="button" data-panel="services">Student services</button>
       <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
@@ -101,6 +102,24 @@
         <div class="form-actions"><button type="submit">Schedule lesson</button></div>
       </form>
       <div id="lessonList" class="management-list"></div>
+    </section>
+    <section id="classroomPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">ONLINE CLASSROOM</p><h2>Live classes and recordings</h2></div><p>Publish a secure Zoom, Google Meet, Teams, YouTube, Vimeo, or other HTTPS link to active students in one programme. Use the provider's waiting room, passcode, or private-video setting for every class.</p></div>
+      <form id="classroomForm" class="management-form">
+        <input id="classroomId" type="hidden">
+        <label>Programme<select id="classroomCourse" required></select></label>
+        <label>Content type<select id="classroomType"><option value="live">Live class</option><option value="recording">Tutorial recording</option></select></label>
+        <label>Provider<select id="classroomProvider"><option value="zoom">Zoom</option><option value="google_meet">Google Meet</option><option value="microsoft_teams">Microsoft Teams</option><option value="youtube">YouTube</option><option value="vimeo">Vimeo</option><option value="other">Other secure provider</option></select></label>
+        <label>Start date and time<input id="classroomStartsAt" type="datetime-local" required></label>
+        <label id="classroomEndsField">End date and time<input id="classroomEndsAt" type="datetime-local"></label>
+        <label class="form-wide">Title<input id="classroomTitle" required minlength="3" maxlength="180" placeholder="Grade 1 piano live class"></label>
+        <label id="classroomJoinField" class="form-wide">Live class link<input id="classroomJoinUrl" type="url" maxlength="2000" placeholder="https://meet.google.com/... or https://zoom.us/..."></label>
+        <label id="classroomRecordingField" class="form-wide" hidden>Tutorial recording link<input id="classroomRecordingUrl" type="url" maxlength="2000" placeholder="https://..."></label>
+        <label class="form-wide">Description<textarea id="classroomDescription" rows="3" maxlength="2000" placeholder="What students should prepare or learn"></textarea></label>
+        <label>Visibility<select id="classroomPublished"><option value="false">Save as draft</option><option value="true">Publish to active students</option></select></label>
+        <div class="form-actions"><button type="submit">Save classroom item</button><button id="cancelClassroomEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>
+      </form>
+      <div id="classroomList" class="management-list"></div>
     </section>
     <section id="paymentsPanel" class="admin-panel" hidden>
       <div class="management-heading"><div><p class="auth-kicker">PAYMENT RECORDS</p><h2>Record payments</h2></div><p>Only the owner administrator can create or update financial records.</p></div>

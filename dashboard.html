@@ -16,138 +16,52 @@
   <main class="portal-shell">
     <header class="portal-header">
       <a class="auth-logo brand-logo" href="./index.html" aria-label="DSAM'S Academy of Music home"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
-      <div class="portal-actions">
-        <span class="portal-type">Student Portal</span>
-        <a class="portal-home" href="./index.html">← Back to academy</a>
-        <button id="signOutButton" class="portal-signout">Sign out</button>
-      </div>
+      <div class="portal-actions"><span class="portal-type">Student Portal</span><a class="portal-home" href="./index.html">← Back to academy</a><button id="signOutButton" class="portal-signout">Sign out</button></div>
     </header>
-    <section class="portal-welcome">
-      <p class="auth-kicker">STUDENT PORTAL</p>
-      <h1 id="studentName">Welcome</h1>
-      <p id="studentWelcome">Keep track of your programme, lessons, and payments in one place.</p>
-    </section>
-    <section class="dashboard-card notification-card">
-      <div class="student-section-heading"><div><p class="card-label">NOTIFICATIONS</p><h2>Updates from the academy</h2></div><button id="markNotificationsRead" class="details-button" type="button" hidden>Mark all read</button></div>
-      <div id="notificationList" class="notification-list"><p>No new notifications.</p></div>
-    </section>
-    <section class="dashboard-grid">
-      <article class="dashboard-card">
-        <p class="card-label">YOUR APPLICATION</p>
-        <h2 id="courseName">No application yet</h2>
-        <p id="courseDetail">Choose a programme and submit your enrolment application to begin.</p>
-        <a class="dashboard-link" href="./index.html#contact">Start enrolment →</a>
-      </article>
-      <article class="dashboard-card">
-        <p class="card-label">NEXT LESSON</p>
-        <h2 id="lessonDate">No lesson scheduled</h2>
-        <p id="lessonDetail">Your confirmed lesson times will appear here.</p>
-      </article>
-      <article class="dashboard-card">
-        <p class="card-label">PAYMENT STATUS</p>
-        <h2 id="paymentStatus">No payment due</h2>
-        <p id="paymentDetail">Payment records will appear after your enrolment is confirmed.</p>
-      </article>
-    </section>
-    <section class="dashboard-card student-profile-card">
-      <div class="student-section-heading">
-        <div>
-          <p class="card-label">MY PROFILE</p>
-          <h2>Keep your learning details current</h2>
-          <p>Your academy team uses these details to prepare your lessons and contact you.</p>
-        </div>
-        <span id="profileStatus" class="profile-status" role="status"></span>
+    <section class="portal-welcome"><p class="auth-kicker">STUDENT PORTAL</p><h1 id="studentName">Welcome</h1><p id="studentWelcome">Keep track of your programme, lessons, and payments in one place.</p></section>
+
+    <button id="studentMenuToggle" class="student-menu-toggle" type="button" aria-controls="studentSidebar" aria-expanded="false">Browse portal <span aria-hidden="true">☰</span></button>
+    <div class="student-workspace">
+      <nav id="studentSidebar" class="student-sidebar" aria-label="Student portal sections">
+        <button class="student-nav-button active" type="button" data-student-panel="overview">Overview</button>
+        <button class="student-nav-button" type="button" data-student-panel="classroom">Classroom</button>
+        <button class="student-nav-button" type="button" data-student-panel="learning">Learning</button>
+        <button class="student-nav-button" type="button" data-student-panel="services">Support</button>
+        <button class="student-nav-button" type="button" data-student-panel="finance">Payments</button>
+        <button class="student-nav-button" type="button" data-student-panel="updates">Updates</button>
+      </nav>
+
+      <div class="student-content">
+        <section id="overviewStudentPanel" class="student-panel">
+          <section class="dashboard-grid">
+            <article class="dashboard-card"><p class="card-label">YOUR APPLICATION</p><h2 id="courseName">No application yet</h2><p id="courseDetail">Choose a programme and submit your enrolment application to begin.</p><a class="dashboard-link" href="./index.html#contact">Start enrolment →</a></article>
+            <article class="dashboard-card"><p class="card-label">NEXT LESSON</p><h2 id="lessonDate">No lesson scheduled</h2><p id="lessonDetail">Your confirmed lesson times will appear here.</p></article>
+            <article class="dashboard-card"><p class="card-label">PAYMENT STATUS</p><h2 id="paymentStatus">No payment due</h2><p id="paymentDetail">Payment records will appear after your enrolment is confirmed.</p></article>
+          </section>
+          <section class="dashboard-card student-profile-card"><div class="student-section-heading"><div><p class="card-label">MY PROFILE</p><h2>Keep your learning details current</h2><p>Your academy team uses these details to prepare your lessons and contact you.</p></div><span id="profileStatus" class="profile-status" role="status"></span></div><form id="profileForm" class="student-profile-form"><label>Full name<input id="profileName" name="full_name" autocomplete="name" required></label><label>Email address<input id="profileEmail" type="email" disabled></label><label>Phone number<input id="profilePhone" name="phone" autocomplete="tel" placeholder="e.g. +234 800 000 0000"></label><label>Primary instrument or interest<input id="profileInstrument" name="instrument" placeholder="e.g. Piano, Voice, Guitar"></label><div class="student-form-actions"><button type="submit">Save profile</button></div></form></section>
+          <section class="dashboard-card enrollment-history"><div><p class="card-label">YOUR ENROLMENTS</p><h2>Application history</h2><p id="enrollmentSummary">Your submitted applications will appear here.</p></div><div id="enrollmentList" class="enrollment-list"><p>No enrolments yet.</p></div></section>
+        </section>
+
+        <section id="classroomStudentPanel" class="student-panel" hidden>
+          <section class="dashboard-card schedule-card"><div><p class="card-label">LESSON SCHEDULE</p><h2>Your upcoming lessons</h2></div><div id="scheduleList" class="schedule-list"><p>No upcoming lessons yet.</p></div></section>
+          <section class="classroom-delivery-grid"><section class="dashboard-card learning-feed-card"><div><p class="card-label">LIVE CLASSES</p><h2>Join your scheduled class</h2><p>Your academy team publishes access only for your active programme.</p></div><div id="classroomLiveList" class="learning-feed-list"><p>No live classes are scheduled for your programme.</p></div></section><section class="dashboard-card learning-feed-card"><div><p class="card-label">PAST TUTORIALS</p><h2>Watch published recordings</h2><p>Watch lesson recordings and tutorials shared by your tutor.</p></div><div id="classroomRecordingList" class="learning-feed-list"><p>No tutorial recordings have been shared yet.</p></div></section></section>
+        </section>
+
+        <section id="learningStudentPanel" class="student-panel" hidden>
+          <section class="student-learning-grid"><section class="dashboard-card learning-feed-card"><div><p class="card-label">LEARNING MATERIALS</p><h2>Your programme resources</h2><p>Resources shared by your tutor appear here after your enrolment is active.</p></div><div id="learningMaterialList" class="learning-feed-list"><p>No learning materials have been shared yet.</p></div></section><section class="dashboard-card learning-feed-card"><div><p class="card-label">PROGRESS & PRACTICE</p><h2>Your tutor updates</h2><p>Feedback and practice goals from your academy team.</p></div><div id="progressEntryList" class="learning-feed-list"><p>No progress updates yet.</p></div></section></section>
+          <section class="dashboard-card assignment-card"><div><p class="card-label">ASSIGNMENTS</p><h2>Submit your work</h2><p>Submit a written update or secure link for assignments shared in your programme.</p></div><form id="assignmentForm" class="student-service-form assignment-form"><label>Assignment<select id="assignmentMaterial" required><option value="">No assignments available</option></select></label><label>Submission link (optional)<input id="assignmentUrl" type="url" maxlength="1000" placeholder="https://..."></label><label class="service-wide">Your submission<textarea id="assignmentText" rows="4" maxlength="5000" placeholder="Describe your completed work, practice, or performance."></textarea></label><button type="submit">Submit assignment</button><p id="assignmentStatus" class="service-status" role="status"></p></form><div id="assignmentList" class="service-history"><p>No assignment submissions yet.</p></div></section>
+        </section>
+
+        <section id="servicesStudentPanel" class="student-panel" hidden>
+          <section class="student-services-grid"><section class="dashboard-card service-card"><div><p class="card-label">LESSON CHANGES</p><h2>Request a change</h2><p>Send a request for an upcoming lesson. Your tutor must approve it before anything changes.</p></div><form id="lessonRequestForm" class="student-service-form"><label>Upcoming lesson<select id="requestLesson" required><option value="">No upcoming lessons available</option></select></label><label>Request<select id="requestType"><option value="reschedule">Reschedule lesson</option><option value="cancel">Cancel lesson</option></select></label><label id="requestedTimeField">Preferred new date and time<input id="requestedStartsAt" type="datetime-local"></label><label>Reason<textarea id="requestReason" rows="3" minlength="5" maxlength="1500" required></textarea></label><button type="submit">Send request</button><p id="lessonRequestStatus" class="service-status" role="status"></p></form><div id="lessonRequestList" class="service-history"><p>No lesson-change requests yet.</p></div></section><section class="dashboard-card service-card"><div><p class="card-label">STUDENT SUPPORT</p><h2>Open a support request</h2><p>Use this for payment, lesson, technical, or general support. The academy response stays in your portal.</p></div><form id="supportTicketForm" class="student-service-form"><label>Category<select id="ticketCategory"><option value="general">General support</option><option value="lesson">Lesson support</option><option value="payment">Payment support</option><option value="technical">Technical support</option></select></label><label>Subject<input id="ticketSubject" minlength="3" maxlength="180" required></label><label>Message<textarea id="ticketMessage" rows="4" minlength="5" maxlength="4000" required></textarea></label><button type="submit">Send support request</button><p id="ticketStatus" class="service-status" role="status"></p></form><div id="ticketList" class="service-history"><p>No support requests yet.</p></div></section></section>
+          <section class="student-support-card"><div><p class="card-label">NEED HELP?</p><h2>Contact the academy team</h2><p>For payment questions, lesson changes, or enrolment support, contact DSAM'S Academy directly.</p></div><a class="dashboard-link" href="mailto:dsamacademyofmusic@gmail.com?subject=Student%20Portal%20Support">Email the academy →</a></section>
+        </section>
+
+        <section id="financeStudentPanel" class="student-panel" hidden><section class="dashboard-card payment-history"><div><p class="card-label">PAYMENT HISTORY</p><h2>Your recorded payments</h2><p>Payments are recorded by the academy after confirmation.</p></div><div id="paymentList" class="payment-list"><p>No payment records yet.</p></div></section><section class="dashboard-card invoice-card"><div><p class="card-label">INVOICES</p><h2>Your academy invoices</h2><p>Invoices are issued by the academy. Online payment can be connected later without changing your records.</p></div><div id="invoiceList" class="payment-list"><p>No invoices have been issued yet.</p></div></section></section>
+
+        <section id="updatesStudentPanel" class="student-panel" hidden><section class="dashboard-card notification-card"><div class="student-section-heading"><div><p class="card-label">NOTIFICATIONS</p><h2>Updates from the academy</h2></div><button id="markNotificationsRead" class="details-button" type="button" hidden>Mark all read</button></div><div id="notificationList" class="notification-list"><p>No new notifications.</p></div></section><section class="dashboard-card announcement-card"><div><p class="card-label">ACADEMY NOTICES</p><h2>Latest announcements</h2><p>Important academy updates, events, and reminders.</p></div><div id="announcementFeed" class="announcement-feed"><p>No announcements have been published yet.</p></div></section></section>
       </div>
-      <form id="profileForm" class="student-profile-form">
-        <label>Full name<input id="profileName" name="full_name" autocomplete="name" required></label>
-        <label>Email address<input id="profileEmail" type="email" disabled></label>
-        <label>Phone number<input id="profilePhone" name="phone" autocomplete="tel" placeholder="e.g. +234 800 000 0000"></label>
-        <label>Primary instrument or interest<input id="profileInstrument" name="instrument" placeholder="e.g. Piano, Voice, Guitar"></label>
-        <div class="student-form-actions"><button type="submit">Save profile</button></div>
-      </form>
-    </section>
-    <section class="dashboard-card enrollment-history">
-      <div>
-        <p class="card-label">YOUR ENROLMENTS</p>
-        <h2>Application history</h2>
-        <p id="enrollmentSummary">Your submitted applications will appear here.</p>
-      </div>
-      <div id="enrollmentList" class="enrollment-list"><p>No enrolments yet.</p></div>
-    </section>
-    <section class="dashboard-card schedule-card">
-      <div>
-        <p class="card-label">LESSON SCHEDULE</p>
-        <h2>Your upcoming lessons</h2>
-      </div>
-      <div id="scheduleList" class="schedule-list"><p>No upcoming lessons yet.</p></div>
-    </section>
-    <section class="student-services-grid">
-      <section class="dashboard-card service-card">
-        <div><p class="card-label">LESSON CHANGES</p><h2>Request a change</h2><p>Send a request for an upcoming lesson. Your tutor must approve it before anything changes.</p></div>
-        <form id="lessonRequestForm" class="student-service-form">
-          <label>Upcoming lesson<select id="requestLesson" required><option value="">No upcoming lessons available</option></select></label>
-          <label>Request<select id="requestType"><option value="reschedule">Reschedule lesson</option><option value="cancel">Cancel lesson</option></select></label>
-          <label id="requestedTimeField">Preferred new date and time<input id="requestedStartsAt" type="datetime-local"></label>
-          <label>Reason<textarea id="requestReason" rows="3" minlength="5" maxlength="1500" required></textarea></label>
-          <button type="submit">Send request</button><p id="lessonRequestStatus" class="service-status" role="status"></p>
-        </form>
-        <div id="lessonRequestList" class="service-history"><p>No lesson-change requests yet.</p></div>
-      </section>
-      <section class="dashboard-card service-card">
-        <div><p class="card-label">STUDENT SUPPORT</p><h2>Open a support request</h2><p>Use this for payment, lesson, technical, or general support. The academy response stays in your portal.</p></div>
-        <form id="supportTicketForm" class="student-service-form">
-          <label>Category<select id="ticketCategory"><option value="general">General support</option><option value="lesson">Lesson support</option><option value="payment">Payment support</option><option value="technical">Technical support</option></select></label>
-          <label>Subject<input id="ticketSubject" minlength="3" maxlength="180" required></label>
-          <label>Message<textarea id="ticketMessage" rows="4" minlength="5" maxlength="4000" required></textarea></label>
-          <button type="submit">Send support request</button><p id="ticketStatus" class="service-status" role="status"></p>
-        </form>
-        <div id="ticketList" class="service-history"><p>No support requests yet.</p></div>
-      </section>
-    </section>
-    <section class="student-learning-grid">
-      <section class="dashboard-card learning-feed-card">
-        <div><p class="card-label">LEARNING MATERIALS</p><h2>Your programme resources</h2><p>Resources shared by your tutor appear here after your enrolment is active.</p></div>
-        <div id="learningMaterialList" class="learning-feed-list"><p>No learning materials have been shared yet.</p></div>
-      </section>
-      <section class="dashboard-card learning-feed-card">
-        <div><p class="card-label">PROGRESS & PRACTICE</p><h2>Your tutor updates</h2><p>Feedback and practice goals from your academy team.</p></div>
-        <div id="progressEntryList" class="learning-feed-list"><p>No progress updates yet.</p></div>
-      </section>
-    </section>
-    <section class="dashboard-card assignment-card">
-      <div><p class="card-label">ASSIGNMENTS</p><h2>Submit your work</h2><p>Submit a written update or secure link for assignments shared in your programme.</p></div>
-      <form id="assignmentForm" class="student-service-form assignment-form">
-        <label>Assignment<select id="assignmentMaterial" required><option value="">No assignments available</option></select></label>
-        <label>Submission link (optional)<input id="assignmentUrl" type="url" maxlength="1000" placeholder="https://..."></label>
-        <label class="service-wide">Your submission<textarea id="assignmentText" rows="4" maxlength="5000" placeholder="Describe your completed work, practice, or performance."></textarea></label>
-        <button type="submit">Submit assignment</button><p id="assignmentStatus" class="service-status" role="status"></p>
-      </form>
-      <div id="assignmentList" class="service-history"><p>No assignment submissions yet.</p></div>
-    </section>
-    <section class="dashboard-card payment-history">
-      <div>
-        <p class="card-label">PAYMENT HISTORY</p>
-        <h2>Your recorded payments</h2>
-        <p>Payments are recorded by the academy after confirmation.</p>
-      </div>
-      <div id="paymentList" class="payment-list"><p>No payment records yet.</p></div>
-    </section>
-    <section class="dashboard-card invoice-card">
-      <div><p class="card-label">INVOICES</p><h2>Your academy invoices</h2><p>Invoices are issued by the academy. Online payment can be connected later without changing your records.</p></div>
-      <div id="invoiceList" class="payment-list"><p>No invoices have been issued yet.</p></div>
-    </section>
-    <section class="dashboard-card announcement-card">
-      <div><p class="card-label">ACADEMY NOTICES</p><h2>Latest announcements</h2><p>Important academy updates, events, and reminders.</p></div>
-      <div id="announcementFeed" class="announcement-feed"><p>No announcements have been published yet.</p></div>
-    </section>
-    <section class="student-support-card">
-      <div>
-        <p class="card-label">NEED HELP?</p>
-        <h2>Contact the academy team</h2>
-        <p>For payment questions, lesson changes, or enrolment support, contact DSAM'S Academy directly.</p>
-      </div>
-      <a class="dashboard-link" href="mailto:dsamacademyofmusic@gmail.com?subject=Student%20Portal%20Support">Email the academy →</a>
-    </section>
+    </div>
   </main>
   <script type="module" src="./src/scripts/portals/student-dashboard.js"></script>
 </body>

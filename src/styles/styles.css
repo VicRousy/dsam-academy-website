@@ -639,3 +639,24 @@ img, video, iframe { max-width: 100%; }
     .hero h1, .section-header h2, .portal-welcome h1, .info-title { max-width: 100%; overflow-wrap: anywhere; }
     .section-header { width: 100%; }
 }
+
+/* Sectioned student portal and classroom delivery. */
+.student-workspace { display:grid; grid-template-columns:210px minmax(0,1fr); gap:20px; align-items:start; }
+.student-sidebar { position:sticky; top:20px; display:grid; gap:8px; padding:12px; border:1px solid var(--border-glass); border-radius:16px; background:rgba(13,13,22,.85); }
+.student-nav-button,.student-menu-toggle { border:1px solid transparent; border-radius:9px; background:transparent; color:var(--text-secondary); font:700 .86rem 'Plus Jakarta Sans',sans-serif; text-align:left; cursor:pointer; }
+.student-nav-button { padding:11px 12px; }
+.student-nav-button:hover,.student-nav-button.active { border-color:rgba(229,169,59,.45); background:rgba(229,169,59,.11); color:var(--accent-gold); }
+.student-menu-toggle { display:none; align-items:center; justify-content:space-between; width:100%; padding:12px 14px; border-color:var(--border-glass); background:rgba(13,13,22,.85); color:var(--text-primary); }
+.student-menu-toggle span { color:var(--accent-gold); font-size:1.2rem; }
+.student-content { min-width:0; }
+.student-panel[hidden] { display:none; }
+.classroom-delivery-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:18px; }
+.classroom-entry .dashboard-link { display:inline-block; margin-top:12px; }
+@media (max-width:900px) {
+  .student-workspace { grid-template-columns:1fr; }
+  .student-menu-toggle { display:flex; margin:0 0 14px; }
+  .student-sidebar { display:none; position:static; margin-bottom:16px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .student-sidebar.is-open { display:grid; }
+}
+@media (max-width:720px) { .classroom-delivery-grid { grid-template-columns:1fr; } }
+@media (max-width:460px) { .student-sidebar { grid-template-columns:1fr; } }

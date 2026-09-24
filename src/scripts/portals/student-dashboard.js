@@ -9,6 +9,7 @@ if (!session) {
   const user = session.user;
   const escapeHtml = (value) => String(value || '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
   const formatDate = (value, options) => new Date(value).toLocaleDateString(undefined, options);
+  const formatDateTime = (value) => new Date(value).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const formatMoney = (amount) => `₦${Number(amount || 0).toLocaleString()}`;
   const statusLabels = { active: 'Approved', declined: 'Declined', pending: 'Pending', paid: 'Paid', scheduled: 'Scheduled', completed: 'Completed', cancelled: 'Cancelled' };
   const applicationDetails = {
@@ -34,6 +35,29 @@ if (!session) {
   const invoiceList = document.querySelector('#invoiceList');
   const notificationList = document.querySelector('#notificationList');
   const markNotificationsRead = document.querySelector('#markNotificationsRead');
+  const classroomLiveList = document.querySelector('#classroomLiveList');
+  const classroomRecordingList = document.querySelector('#classroomRecordingList');
+  const studentMenuToggle = document.querySelector('#studentMenuToggle');
+  const studentSidebar = document.querySelector('#studentSidebar');
+  const studentPanels = document.querySelectorAll('.student-panel');
+  const studentPanelButtons = document.querySelectorAll('[data-student-panel]');
+
+  const showStudentPanel = (panelName) => {
+    studentPanels.forEach((panel) => { panel.hidden = panel.id !== `${panelName}StudentPanel`; });
+    studentPanelButtons.forEach((button) => {
+      const active = button.dataset.studentPanel === panelName;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-current', active ? 'page' : 'false');
+    });
+    studentSidebar.classList.remove('is-open');
+    studentMenuToggle.setAttribute('aria-expanded', 'false');
+  };
+
+  studentPanelButtons.forEach((button) => button.addEventListener('click', () => showStudentPanel(button.dataset.studentPanel)));
+  studentMenuToggle.addEventListener('click', () => {
+    const isOpen = studentSidebar.classList.toggle('is-open');
+    studentMenuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
 
   document.querySelector('#studentName').textContent = `Welcome, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
   document.querySelector('#signOutButton').onclick = async () => {
@@ -136,6 +160,31 @@ if (!session) {
       const attendance = lesson.attendance_status && lesson.attendance_status !== 'scheduled' ? ` · ${lesson.attendance_status}` : '';
       return `<article class="lesson-row"><div><strong>${escapeHtml(lessonTitle)}</strong><span>${formatDate(date, { weekday: 'short', month: 'short', day: 'numeric' })} · ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span><span>${escapeHtml(lesson.instructor || "DSAM'S Tutor")} · ${escapeHtml(lesson.location || "DSAM'S Academy")}${escapeHtml(attendance)}</span></div><span class="lesson-status">${escapeHtml(statusLabels[lesson.status] || 'Scheduled')}</span></article>`;
     }).join('');
+  }
+
+  async function loadClassroom() {
+    const { data, error } = await supabase
+      .from('classroom_sessions')
+      .select('title,description,delivery_type,provider,starts_at,ends_at,join_url,recording_url,courses(title)')
+      .order('starts_at', { ascending: false })
+      .limit(30);
+
+    if (error || !data?.length) return;
+
+    const now = new Date();
+    const liveClasses = data.filter((classroomSession) => classroomSession.delivery_type === 'live' && (!classroomSession.ends_at ? new Date(classroomSession.starts_at) >= now : new Date(classroomSession.ends_at) >= now));
+    const recordings = data.filter((classroomSession) => classroomSession.delivery_type === 'recording');
+    const renderClassroomItems = (sessions, type) => sessions.length ? sessions.map((classroomSession) => {
+      const url = type === 'live' ? classroomSession.join_url : classroomSession.recording_url;
+      const safeUrl = /^https:\/\//i.test(url || '') ? url : '';
+      const action = safeUrl ? `<a class="dashboard-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">${type === 'live' ? 'Join live class →' : 'Watch tutorial →'}</a>` : '';
+      const provider = escapeHtml((classroomSession.provider || 'academy').replaceAll('_', ' '));
+      const schedule = type === 'live' ? `${formatDateTime(classroomSession.starts_at)}${classroomSession.ends_at ? ` – ${new Date(classroomSession.ends_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}` : `Published tutorial · ${provider}`;
+      return `<article class="learning-entry classroom-entry"><p class="card-label">${type === 'live' ? 'LIVE CLASS' : 'RECORDING'} · ${escapeHtml(classroomSession.courses?.title || 'Programme')}</p><h3>${escapeHtml(classroomSession.title)}</h3><p>${escapeHtml(classroomSession.description || (type === 'live' ? 'Your academy team has scheduled this class.' : 'A tutorial from your academy team.'))}</p><span>${schedule}</span>${action}</article>`;
+    }).join('') : `<p>${type === 'live' ? 'No live classes are scheduled for your programme.' : 'No tutorial recordings have been shared yet.'}</p>`;
+
+    classroomLiveList.innerHTML = renderClassroomItems(liveClasses, 'live');
+    classroomRecordingList.innerHTML = renderClassroomItems(recordings, 'recording');
   }
 
   async function loadPayments() {
@@ -292,5 +341,5 @@ if (!session) {
     await loadNotifications();
   });
 
-  await Promise.all([loadProfile(), loadEnrolments(), loadLessons(), loadPayments(), loadLearningMaterials(), loadProgressEntries(), loadAnnouncements(), loadLessonRequests(), loadSupportTickets(), loadAssignments(), loadInvoices(), loadNotifications()]);
+  await Promise.all([loadProfile(), loadEnrolments(), loadLessons(), loadClassroom(), loadPayments(), loadLearningMaterials(), loadProgressEntries(), loadAnnouncements(), loadLessonRequests(), loadSupportTickets(), loadAssignments(), loadInvoices(), loadNotifications()]);
 }
