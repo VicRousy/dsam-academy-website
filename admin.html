@@ -143,7 +143,9 @@
             <label>Programme<select id="materialCourse" required></select></label>
             <label>Material type<select id="materialType"><option value="resource">Resource</option><option value="assignment">Assignment</option><option value="sheet_music">Sheet music</option><option value="video">Video</option><option value="recording">Recording</option></select></label>
             <label class="form-wide">Title<input id="materialTitle" required maxlength="180" placeholder="Week 1 scale practice"></label>
-            <label class="form-wide">Resource link<input id="materialUrl" type="url" maxlength="1000" placeholder="https://..."></label>
+            <label class="form-wide">Resource link (optional)<input id="materialUrl" type="url" maxlength="1000" placeholder="https://..."></label>
+            <label class="form-wide">Upload private file (optional)<input id="materialFile" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.mp3,.wav,.m4a,.mp4,.mov"></label>
+            <p id="materialFileStatus" class="form-hint">Use either a secure link or a file up to 50 MB. Students in the selected programme are the only students who can open uploaded files.</p>
             <label class="form-wide">Description<textarea id="materialDescription" rows="3" maxlength="1500"></textarea></label>
             <label>Visibility<select id="materialPublished"><option value="true">Published to students</option><option value="false">Draft — staff only</option></select></label>
             <div class="form-actions"><button type="submit">Save material</button><button id="cancelMaterialEdit" type="button" class="secondary-button" hidden>Cancel edit</button></div>

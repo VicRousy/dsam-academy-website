@@ -584,6 +584,7 @@ footer p { color: var(--text-secondary); font-size: 0.9rem; }
 .learning-admin-grid,.student-learning-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
 .learning-admin-grid>div { min-width:0; }.management-subheading { margin:0 0 12px; font:800 1.08rem 'Syne',sans-serif; }
 .compact-form { grid-template-columns:1fr; padding:18px; }.compact-form .form-wide,.compact-form .form-actions { grid-column:auto; }
+.form-hint { margin:0; color:var(--text-secondary); font-size:.78rem; line-height:1.5; }
 .learning-feed-card,.announcement-card { display:flex; align-items:flex-start; justify-content:space-between; gap:26px; margin-top:18px; }
 .learning-feed-list,.announcement-feed { min-width:46%; display:grid; gap:12px; }
 .learning-entry,.announcement-entry { padding:16px; border:1px solid var(--border-glass); border-radius:12px; background:rgba(8,8,14,.48); }

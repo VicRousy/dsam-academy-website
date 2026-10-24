@@ -28,6 +28,9 @@ let classroomSessions = [];
 let classroomAccessStats = new Map();
 let isAdmin = false;
 let pendingStaffCount = 0;
+const materialBucket = 'academy-materials';
+const maxMaterialFileSize = 50 * 1024 * 1024;
+const supportedMaterialExtensions = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'mp3', 'wav', 'm4a', 'mp4', 'mov']);
 
 const showStatus = (message, error = false) => {
   status.textContent = message;
@@ -354,6 +357,7 @@ const resetMaterialForm = () => {
   document.querySelector('#materialForm').reset();
   document.querySelector('#materialId').value = '';
   document.querySelector('#cancelMaterialEdit').hidden = true;
+  document.querySelector('#materialFileStatus').textContent = 'Use either a secure link or a file up to 50 MB. Students in the selected programme are the only students who can open uploaded files.';
 };
 
 const openMaterialEditor = (materialId) => {
@@ -367,22 +371,33 @@ const openMaterialEditor = (materialId) => {
   document.querySelector('#materialDescription').value = material.description || '';
   document.querySelector('#materialPublished').value = String(material.is_published);
   document.querySelector('#cancelMaterialEdit').hidden = false;
+  document.querySelector('#materialFileStatus').textContent = material.storage_path ? `Current private upload: ${material.storage_path.split('/').at(-1)}. Choose a new file or enter a replacement link to replace it.` : 'This material currently uses an external link or has no uploaded file.';
   document.querySelector('#materialForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
 const loadLearningWorkspace = async () => {
   await loadCourses();
   const materialList = document.querySelector('#materialList');
-  const { data, error } = await supabase.from('learning_materials').select('id,course_id,title,description,material_type,resource_url,is_published,created_at,courses(title)').order('created_at', { ascending: false }).limit(100);
+  const { data, error } = await supabase.from('learning_materials').select('id,course_id,title,description,material_type,resource_url,storage_path,is_published,created_at,courses(title)').order('created_at', { ascending: false }).limit(100);
   if (error) {
     materialList.innerHTML = '<p class="admin-status error">Learning tools need the `learning_workspace.sql` migration to be run in Supabase first.</p>';
     document.querySelector('#progressList').innerHTML = '';
     return;
   }
   learningMaterials = data || [];
-  materialList.innerHTML = learningMaterials.length ? learningMaterials.map((material) => `<article class="management-card"><div><p class="card-label">${escapeHtml(material.material_type || 'resource').replace('_', ' ').toUpperCase()} · ${material.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(material.title)}</h3><p>${escapeHtml(material.courses?.title || 'Programme')}</p><p>${escapeHtml(material.description || 'No description added.')}</p></div><button class="details-button" data-material-id="${material.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No learning materials have been added yet.</p>';
+  materialList.innerHTML = learningMaterials.length ? learningMaterials.map((material) => `<article class="management-card"><div><p class="card-label">${escapeHtml(material.material_type || 'resource').replace('_', ' ').toUpperCase()} · ${material.is_published ? 'PUBLISHED' : 'DRAFT'}</p><h3>${escapeHtml(material.title)}</h3><p>${escapeHtml(material.courses?.title || 'Programme')}</p><p>${escapeHtml(material.description || 'No description added.')}</p><p>${material.storage_path ? 'Private uploaded file' : material.resource_url ? 'External resource link' : 'No file or link attached'}</p></div><button class="details-button" data-material-id="${material.id}" type="button">Edit</button></article>`).join('') : '<p class="admin-empty">No learning materials have been added yet.</p>';
   materialList.querySelectorAll('[data-material-id]').forEach((button) => button.addEventListener('click', () => openMaterialEditor(button.dataset.materialId)));
   await loadProgressEntries();
+};
+
+const uploadMaterialFile = async (file, courseId) => {
+  const extension = file.name.split('.').pop()?.toLowerCase() || '';
+  if (!supportedMaterialExtensions.has(extension)) return { error: 'Choose a PDF, Office document, image, audio, or video file.' };
+  if (file.size > maxMaterialFileSize) return { error: 'Uploaded files must be 50 MB or smaller.' };
+  const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || `material.${extension}`;
+  const path = `${courseId}/${crypto.randomUUID()}-${safeName}`;
+  const { error } = await supabase.storage.from(materialBucket).upload(path, file, { upsert: false, contentType: file.type || undefined });
+  return error ? { error: error.message } : { path };
 };
 
 const loadProgressEntries = async () => {
@@ -587,11 +602,30 @@ const bindForms = () => {
   document.querySelector('#materialForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const materialId = document.querySelector('#materialId').value;
+    const existingMaterial = learningMaterials.find((material) => material.id === materialId);
+    const materialType = document.querySelector('#materialType').value;
+    const resourceUrl = document.querySelector('#materialUrl').value.trim();
+    const file = document.querySelector('#materialFile').files?.[0];
+    const fileStatus = document.querySelector('#materialFileStatus');
+    if (resourceUrl && file) return showStatus('Use either an external link or an uploaded file, not both.', true);
+    if (resourceUrl && !/^https:\/\//i.test(resourceUrl)) return showStatus('Resource links must start with https://.', true);
+    if (!resourceUrl && !file && !existingMaterial?.storage_path && !existingMaterial?.resource_url && materialType !== 'assignment') return showStatus('Add a secure external link or upload a file for this material.', true);
+    let uploadedPath = null;
+    if (file) {
+      fileStatus.textContent = 'Uploading private material…';
+      const upload = await uploadMaterialFile(file, document.querySelector('#materialCourse').value);
+      if (upload.error) {
+        fileStatus.textContent = upload.error;
+        return showStatus(upload.error, true);
+      }
+      uploadedPath = upload.path;
+    }
     const payload = {
       course_id: document.querySelector('#materialCourse').value,
-      material_type: document.querySelector('#materialType').value,
+      material_type: materialType,
       title: document.querySelector('#materialTitle').value.trim(),
-      resource_url: document.querySelector('#materialUrl').value.trim() || null,
+      resource_url: file ? null : resourceUrl || existingMaterial?.resource_url || null,
+      storage_path: uploadedPath || (resourceUrl ? null : existingMaterial?.storage_path || null),
       description: document.querySelector('#materialDescription').value.trim() || null,
       is_published: document.querySelector('#materialPublished').value === 'true',
       updated_at: new Date().toISOString(),
@@ -600,10 +634,14 @@ const bindForms = () => {
       ? supabase.from('learning_materials').update(payload).eq('id', materialId)
       : supabase.from('learning_materials').insert({ ...payload, created_by: session.user.id });
     const { error } = await request;
-    if (error) return showStatus(error.message, true);
+    if (error) {
+      if (uploadedPath) await supabase.storage.from(materialBucket).remove([uploadedPath]);
+      return showStatus(error.message, true);
+    }
+    if (existingMaterial?.storage_path && existingMaterial.storage_path !== payload.storage_path) await supabase.storage.from(materialBucket).remove([existingMaterial.storage_path]);
     resetMaterialForm();
     await loadLearningWorkspace();
-    showStatus(`Learning material ${materialId ? 'updated' : 'published'}.`);
+    showStatus(`Learning material ${materialId ? 'updated' : 'published'}${uploadedPath ? ' with a private file' : ''}.`);
   });
   document.querySelector('#cancelMaterialEdit').addEventListener('click', resetMaterialForm);
   document.querySelector('#progressForm').addEventListener('submit', async (event) => {

@@ -169,3 +169,16 @@ test('student classroom provides a calendar download and records access attempts
   assert.match(dashboard, /classroom_access_events/);
   assert.match(dashboard, /download="\$\{escapeHtml\(classroomSession\.title/);
 });
+
+test('private uploaded materials remain course-scoped', async () => {
+  const sql = await read('supabase/content_storage.sql');
+  const adminScript = await read('src/scripts/portals/applications.js');
+  const dashboard = await read('src/scripts/portals/student-dashboard.js');
+
+  assert.match(sql, /insert into storage\.buckets[\s\S]*?'academy-materials'[\s\S]*?false, 52428800/);
+  assert.match(sql, /create policy "staff manage academy material files"[\s\S]*?public\.is_staff\(\)/);
+  assert.match(sql, /create policy "students read active programme material files"[\s\S]*?learning_materials\.storage_path = storage\.objects\.name[\s\S]*?enrollments\.student_id = auth\.uid\(\)[\s\S]*?enrollments\.status = 'active'/);
+  assert.match(adminScript, /academy-materials/);
+  assert.match(adminScript, /maxMaterialFileSize/);
+  assert.match(dashboard, /createSignedUrl\(material\.storage_path/);
+});

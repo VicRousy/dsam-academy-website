@@ -16,6 +16,8 @@ Run `classroom_delivery.sql` after `learning_workspace.sql` to enable live class
 
 Run `classroom_operations.sql` after `classroom_delivery.sql` and `student_services.sql`. It creates classroom notifications for active students and records when a student opens an eligible classroom item, so staff can review access without treating an access click as confirmed attendance.
 
+Run `content_storage.sql` after `learning_workspace.sql` to enable private uploads for course materials. It creates a private 50 MB-per-file storage bucket for PDFs, sheets, documents, images, audio, and videos. Approved staff can upload files; only active students in the matching programme can retrieve them.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -39,6 +41,7 @@ Run the existing files in this order:
 10. `student_services.sql`
 11. `classroom_delivery.sql`
 12. `classroom_operations.sql`
+13. `content_storage.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 

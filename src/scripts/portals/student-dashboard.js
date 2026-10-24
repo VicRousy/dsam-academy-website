@@ -229,18 +229,23 @@ if (!session) {
   async function loadLearningMaterials() {
     const { data, error } = await supabase
       .from('learning_materials')
-      .select('title,description,material_type,resource_url,created_at,courses(title)')
+      .select('id,title,description,material_type,resource_url,storage_path,created_at,courses(title)')
       .order('created_at', { ascending: false })
       .limit(12);
 
     if (error || !data?.length) return;
     const assignments = data.filter((material) => material.material_type === 'assignment');
     if (assignments.length) assignmentMaterial.innerHTML = ['<option value="">Select an assignment</option>', ...assignments.map((material) => `<option value="${material.id}">${escapeHtml(material.title)} · ${escapeHtml(material.courses?.title || 'Programme')}</option>`)].join('');
-    learningMaterialList.innerHTML = data.map((material) => {
-      const safeUrl = /^https:\/\//i.test(material.resource_url || '') ? material.resource_url : '';
+    const materialEntries = await Promise.all(data.map(async (material) => {
+      let safeUrl = /^https:\/\//i.test(material.resource_url || '') ? material.resource_url : '';
+      if (material.storage_path) {
+        const { data: signedFile } = await supabase.storage.from('academy-materials').createSignedUrl(material.storage_path, 60 * 60);
+        safeUrl = signedFile?.signedUrl || '';
+      }
       const action = safeUrl ? `<a class="dashboard-link" href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer">Open resource →</a>` : '';
       return `<article class="learning-entry"><p class="card-label">${escapeHtml((material.material_type || 'resource').replace('_', ' '))} · ${escapeHtml(material.courses?.title || 'Programme')}</p><h3>${escapeHtml(material.title)}</h3><p>${escapeHtml(material.description || 'A learning resource from your academy team.')}</p>${action}</article>`;
-    }).join('');
+    }));
+    learningMaterialList.innerHTML = materialEntries.join('');
   }
 
   async function loadProgressEntries() {
