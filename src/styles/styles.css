@@ -663,3 +663,26 @@ img, video, iframe { max-width: 100%; }
 @media (max-width:720px) { .classroom-delivery-grid { grid-template-columns:1fr; } }
 @media (max-width:460px) { .classroom-entry .classroom-calendar-link { display:block; margin-left:0; } }
 @media (max-width:460px) { .student-sidebar { grid-template-columns:1fr; } }
+
+.intake-section { margin-top:26px; border-top:1px solid var(--border-glass); padding-top:22px; }
+.intake-section h3 { margin:0 0 8px; }
+.intake-section>p { color:var(--text-secondary); font-size:.86rem; line-height:1.5; }
+.intake-section .management-form { margin-top:16px; margin-bottom:0; }
+.curriculum-picker { display:grid; gap:8px; max-width:420px; margin-bottom:22px; color:var(--text-secondary); font-size:.82rem; font-weight:700; }
+.curriculum-picker select { padding:12px 13px; border:1px solid var(--border-glass); border-radius:9px; background:#09090f; color:var(--text-primary); font:inherit; }
+.curriculum-stage-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.curriculum-session-heading { margin-top:30px; }
+.curriculum-session-heading h3 { margin:0 0 5px; }
+.curriculum-session-heading p { margin:0 0 16px; color:var(--text-secondary); font-size:.86rem; }
+.curriculum-session-list { display:grid; gap:12px; }
+.curriculum-session-card { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding:19px; border:1px solid var(--border-glass); border-radius:14px; background:var(--bg-surface); }
+.curriculum-session-card h4 { margin:12px 0 5px; color:var(--text-primary); }
+.curriculum-session-card p:not(.card-label) { margin:0; color:var(--text-secondary); font-size:.87rem; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; }
+.curriculum-session-card .details-button { flex:0 0 auto; }
+.curriculum-editor { margin:18px 0 0; }
+.curriculum-editor summary { display:inline-block; cursor:pointer; color:var(--accent-gold); font-weight:700; }
+.curriculum-editor .management-form { margin:15px 0 0; }
+.curriculum-editor[hidden] { display:none; }
+.form-hint.error { color:#f87171; }
+.curriculum-editor .form-actions button:disabled,.intake-section .form-actions button:disabled { opacity:.6; cursor:wait; }
+@media (max-width:820px) { .curriculum-stage-list { grid-template-columns:1fr; }.curriculum-session-card { display:block; }.curriculum-session-card .details-button { margin-top:14px; } }

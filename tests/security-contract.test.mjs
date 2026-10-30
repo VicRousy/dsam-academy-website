@@ -182,3 +182,23 @@ test('private uploaded materials remain course-scoped', async () => {
   assert.match(adminScript, /maxMaterialFileSize/);
   assert.match(dashboard, /createSignedUrl\(material\.storage_path/);
 });
+
+test('owner curriculum and application intake are restricted to approved staff', async () => {
+  const sql = await read('supabase/curriculum_workspace.sql');
+  const markup = await read('admin.html');
+  const portal = await read('src/scripts/portals/applications.js');
+
+  for (const table of ['curriculum_stages', 'curriculum_sessions', 'application_intake_details']) {
+    assert.match(sql, new RegExp(`alter table public\\.${table} enable row level security;`));
+    assert.match(sql, new RegExp(`create policy "staff read [^"]+" on public\\.${table}\\s+for select to authenticated using \\(\\(select public\\.is_staff\\(\\)\\)\\);`));
+    assert.match(sql, new RegExp(`create policy "staff create [^"]+" on public\\.${table}\\s+for insert to authenticated with check \\(\\(select public\\.is_staff\\(\\)\\)\\);`));
+    assert.match(sql, new RegExp(`create policy "staff update [^"]+" on public\\.${table}\\s+for update to authenticated using \\(\\(select public\\.is_staff\\(\\)\\)\\) with check \\(\\(select public\\.is_staff\\(\\)\\)\\);`));
+  }
+  assert.match(sql, /revoke all on public\.curriculum_stages, public\.curriculum_sessions, public\.application_intake_details from public, anon, authenticated;/);
+  assert.doesNotMatch(sql, /grant[^;]*delete on public\.curriculum_stages/);
+  assert.match(sql, /on conflict \(code\) do nothing;/);
+  assert.match(sql, /on conflict \(stage_id, session_order\) do nothing;/);
+  assert.match(markup, /id="curriculumPanel"/);
+  assert.match(markup, /id="applicationIntakeForm"/);
+  assert.match(portal, /if \(!\['admin', 'staff'\]\.includes\(role\?\.role\)\)/);
+});

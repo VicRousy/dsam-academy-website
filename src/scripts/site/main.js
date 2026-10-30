@@ -3,7 +3,14 @@ import { academy, pricing } from '../config/site-config.js';
 const currency = new Intl.NumberFormat('en-NG', { maximumFractionDigits: 0 });
 
 document.querySelectorAll('[data-academy-address]').forEach((element) => { element.textContent = academy.address; });
-document.querySelectorAll('[data-academy-email]').forEach((element) => { element.textContent = academy.email; });
+document.querySelectorAll('[data-academy-email]').forEach((element) => {
+    element.textContent = academy.email;
+    if (element.tagName === 'A') element.href = `mailto:${academy.email}`;
+});
+document.querySelectorAll('[data-academy-secondary-email]').forEach((element) => {
+    element.textContent = academy.secondaryEmail;
+    element.href = `mailto:${academy.secondaryEmail}`;
+});
 document.querySelectorAll('[data-academy-phone]').forEach((element) => { element.textContent = academy.phone; });
 
 // Mobile navigation

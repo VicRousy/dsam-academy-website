@@ -23,6 +23,8 @@ let profiles = [];
 let courses = [];
 let privateNotes = new Map();
 let learningMaterials = [];
+let curriculumStages = [];
+let curriculumSessions = [];
 let announcements = [];
 let classroomSessions = [];
 let classroomAccessStats = new Map();
@@ -45,6 +47,7 @@ const showPanel = async (panelName) => {
   if (panelName === 'lessons') await loadLessons();
   if (panelName === 'classroom') await loadClassroom();
   if (panelName === 'learning') await loadLearningWorkspace();
+  if (panelName === 'curriculum') await loadCurriculum();
   if (panelName === 'services') await loadStudentServices();
   if (panelName === 'payments') await loadPayments();
   if (panelName === 'announcements') await loadAnnouncements();
@@ -67,14 +70,47 @@ const filteredApplications = () => {
   });
 };
 
-const showDetails = (applicationId) => {
+const showDetails = async (applicationId) => {
   const application = applications.find((item) => item.id === applicationId);
   if (!application) return;
   const student = application.student;
   detailsTitle.textContent = student?.full_name || student?.email || 'Student application';
   detailsContent.innerHTML = `<dl class="details-grid"><div><dt>Programme</dt><dd>${escapeHtml(application.courses?.title || 'Not specified')}</dd></div><div><dt>Status</dt><dd>${statusLabels[application.status] || 'PENDING'}</dd></div><div><dt>Student email</dt><dd>${escapeHtml(student?.email || 'Not available')}</dd></div><div><dt>Application date</dt><dd>${formatDate(application.created_at)}</dd></div><div><dt>Student ID</dt><dd>${escapeHtml(application.student_id)}</dd></div><div><dt>Application ID</dt><dd>${escapeHtml(application.id)}</dd></div></dl>`;
+  document.querySelector('#applicationIntakeForm').reset();
+  document.querySelector('#intakeEnrollmentId').value = application.id;
+  const intakeStatus = document.querySelector('#intakeStatus');
+  intakeStatus.className = 'form-hint';
+  intakeStatus.textContent = 'Loading application form details…';
   details.hidden = false;
   details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const { data, error } = await supabase.from('application_intake_details')
+    .select('surname,first_name,middle_name,address,phone,study_duration,major_instrument,minor_instrument,grade_level,paper_signed_on')
+    .eq('enrollment_id', applicationId).maybeSingle();
+  if (details.hidden || document.querySelector('#intakeEnrollmentId').value !== applicationId) return;
+  if (error) {
+    intakeStatus.className = 'form-hint error';
+    intakeStatus.textContent = 'Application form details need the curriculum workspace database upgrade.';
+    return;
+  }
+  intakeStatus.className = 'form-hint';
+  if (!data) {
+    intakeStatus.textContent = 'No paper application details have been recorded yet.';
+    return;
+  }
+  const fields = {
+    intakeSurname: data.surname,
+    intakeFirstName: data.first_name,
+    intakeMiddleName: data.middle_name,
+    intakeAddress: data.address,
+    intakePhone: data.phone,
+    intakeDuration: data.study_duration,
+    intakeMajorInstrument: data.major_instrument,
+    intakeMinorInstrument: data.minor_instrument,
+    intakeGradeLevel: data.grade_level,
+    intakeSignedOn: data.paper_signed_on,
+  };
+  Object.entries(fields).forEach(([id, value]) => { document.getElementById(id).value = value || ''; });
+  intakeStatus.textContent = 'Application form details are saved for staff review.';
 };
 
 const decideApplication = async (button) => {
@@ -443,6 +479,86 @@ const loadAnnouncements = async () => {
   announcementList.querySelectorAll('[data-announcement-id]').forEach((button) => button.addEventListener('click', () => openAnnouncementEditor(button.dataset.announcementId)));
 };
 
+const resetCurriculumStageForm = () => {
+  document.querySelector('#curriculumStageForm').reset();
+  document.querySelector('#curriculumStageId').value = '';
+  document.querySelector('#curriculumStageEditorTitle').textContent = 'Add a curriculum stage';
+};
+
+const resetCurriculumSessionForm = () => {
+  document.querySelector('#curriculumSessionForm').reset();
+  document.querySelector('#curriculumSessionId').value = '';
+  document.querySelector('#curriculumSessionEditorTitle').textContent = 'Add a session';
+};
+
+const openCurriculumStageEditor = (stageId) => {
+  const stage = curriculumStages.find((item) => item.id === stageId);
+  if (!stage) return;
+  document.querySelector('#curriculumStageId').value = stage.id;
+  document.querySelector('#curriculumTrackName').value = stage.track_name;
+  document.querySelector('#curriculumStageName').value = stage.stage_name;
+  document.querySelector('#curriculumStageOrder').value = stage.stage_order;
+  document.querySelector('#curriculumStageEditorTitle').textContent = 'Edit curriculum stage';
+  const editor = document.querySelector('#curriculumStageForm').closest('details');
+  editor.open = true;
+  editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const openCurriculumSessionEditor = (sessionId) => {
+  const curriculumSession = curriculumSessions.find((item) => item.id === sessionId);
+  if (!curriculumSession) return;
+  document.querySelector('#curriculumStageSelect').value = curriculumSession.stage_id;
+  renderCurriculum();
+  document.querySelector('#curriculumSessionId').value = curriculumSession.id;
+  document.querySelector('#curriculumSessionOrder').value = curriculumSession.session_order;
+  document.querySelector('#curriculumSessionLabel').value = curriculumSession.session_label;
+  document.querySelector('#curriculumTopic').value = curriculumSession.topic;
+  document.querySelector('#curriculumObjectives').value = curriculumSession.objectives;
+  document.querySelector('#curriculumSessionEditorTitle').textContent = 'Edit session';
+  const editor = document.querySelector('#curriculumSessionEditor');
+  editor.open = true;
+  editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const renderCurriculum = () => {
+  const selectedId = document.querySelector('#curriculumStageSelect').value;
+  const selectedStage = curriculumStages.find((stage) => stage.id === selectedId);
+  const stageList = document.querySelector('#curriculumStageList');
+  const sessionCounts = new Map();
+  curriculumSessions.forEach((item) => { sessionCounts.set(item.stage_id, (sessionCounts.get(item.stage_id) || 0) + 1); });
+  stageList.innerHTML = curriculumStages.length ? curriculumStages.map((stage) => `<article class="management-card"><div><p class="card-label">${escapeHtml(stage.track_name).toUpperCase()} · STAGE ${stage.stage_order}</p><h3>${escapeHtml(stage.stage_name)}</h3><p>${sessionCounts.get(stage.id) || 0} session blocks</p></div><button class="details-button" type="button" data-curriculum-stage-id="${stage.id}">Edit stage</button></article>`).join('') : '<p class="admin-empty">No curriculum stages have been added yet.</p>';
+  stageList.querySelectorAll('[data-curriculum-stage-id]').forEach((button) => button.addEventListener('click', () => openCurriculumStageEditor(button.dataset.curriculumStageId)));
+  document.querySelector('#curriculumSessionsTitle').textContent = selectedStage ? `${selectedStage.track_name} · ${selectedStage.stage_name}` : 'Sessions';
+  document.querySelector('#curriculumSessionEditor').hidden = !selectedStage;
+  const sessionList = document.querySelector('#curriculumSessionList');
+  if (!selectedStage) {
+    sessionList.innerHTML = '<p class="admin-empty">Choose a stage to view its sessions.</p>';
+    return;
+  }
+  const visibleSessions = curriculumSessions.filter((item) => item.stage_id === selectedId);
+  sessionList.innerHTML = visibleSessions.length ? visibleSessions.map((item) => `<article class="curriculum-session-card"><div><p class="card-label">${escapeHtml(item.session_label).toUpperCase()}</p><h4>Topic</h4><p>${escapeHtml(item.topic)}</p><h4>Specific objectives</h4><p>${escapeHtml(item.objectives)}</p></div><button class="details-button" type="button" data-curriculum-session-id="${item.id}">Edit session</button></article>`).join('') : '<p class="admin-empty">No sessions have been added for this stage.</p>';
+  sessionList.querySelectorAll('[data-curriculum-session-id]').forEach((button) => button.addEventListener('click', () => openCurriculumSessionEditor(button.dataset.curriculumSessionId)));
+};
+
+const loadCurriculum = async (preferredStageId) => {
+  const stageSelect = document.querySelector('#curriculumStageSelect');
+  const selectedId = preferredStageId || stageSelect.value;
+  const [stageResult, sessionResult] = await Promise.all([
+    supabase.from('curriculum_stages').select('id,track_name,stage_name,stage_order').order('track_name').order('stage_order'),
+    supabase.from('curriculum_sessions').select('id,stage_id,session_order,session_label,topic,objectives').order('session_order'),
+  ]);
+  if (stageResult.error || sessionResult.error) {
+    document.querySelector('#curriculumStageList').innerHTML = '<p class="admin-status error">Curriculum needs the `curriculum_workspace.sql` database upgrade.</p>';
+    document.querySelector('#curriculumSessionList').innerHTML = '';
+    return;
+  }
+  curriculumStages = stageResult.data || [];
+  curriculumSessions = sessionResult.data || [];
+  stageSelect.innerHTML = curriculumStages.length ? curriculumStages.map((stage) => `<option value="${stage.id}">${escapeHtml(stage.track_name)} · ${escapeHtml(stage.stage_name)}</option>`).join('') : '<option value="">No stages available</option>';
+  if (curriculumStages.some((stage) => stage.id === selectedId)) stageSelect.value = selectedId;
+  renderCurriculum();
+};
+
 const serviceStudentName = (studentId) => {
   const profile = profiles.find((item) => item.id === studentId);
   return profile?.full_name || profile?.email || 'Student';
@@ -490,6 +606,91 @@ const loadStudentServices = async () => {
 };
 
 const bindForms = () => {
+  document.querySelector('#applicationIntakeForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const enrollmentId = document.querySelector('#intakeEnrollmentId').value;
+    if (!enrollmentId) return;
+    const optionalValue = (id) => document.getElementById(id).value.trim() || null;
+    const payload = {
+      enrollment_id: enrollmentId,
+      surname: document.querySelector('#intakeSurname').value.trim(),
+      first_name: document.querySelector('#intakeFirstName').value.trim(),
+      middle_name: optionalValue('intakeMiddleName'),
+      address: optionalValue('intakeAddress'),
+      phone: optionalValue('intakePhone'),
+      study_duration: optionalValue('intakeDuration'),
+      major_instrument: optionalValue('intakeMajorInstrument'),
+      minor_instrument: optionalValue('intakeMinorInstrument'),
+      grade_level: optionalValue('intakeGradeLevel'),
+      paper_signed_on: optionalValue('intakeSignedOn'),
+      updated_by: session.user.id,
+      updated_at: new Date().toISOString(),
+    };
+    const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    submitButton.disabled = true;
+    const { error } = await supabase.from('application_intake_details').upsert(payload, { onConflict: 'enrollment_id' });
+    submitButton.disabled = false;
+    if (document.querySelector('#intakeEnrollmentId').value !== enrollmentId) return;
+    document.querySelector('#intakeStatus').className = error ? 'form-hint error' : 'form-hint';
+    document.querySelector('#intakeStatus').textContent = error ? error.message : 'Application form details saved for staff review.';
+    if (error) showStatus(error.message, true);
+  });
+  document.querySelector('#curriculumStageSelect').addEventListener('change', () => {
+    resetCurriculumSessionForm();
+    renderCurriculum();
+  });
+  document.querySelector('#curriculumStageForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const stageId = document.querySelector('#curriculumStageId').value;
+    const payload = {
+      track_name: document.querySelector('#curriculumTrackName').value.trim(),
+      stage_name: document.querySelector('#curriculumStageName').value.trim(),
+      stage_order: Number(document.querySelector('#curriculumStageOrder').value),
+      updated_at: new Date().toISOString(),
+      updated_by: session.user.id,
+    };
+    const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    submitButton.disabled = true;
+    const request = stageId
+      ? supabase.from('curriculum_stages').update(payload).eq('id', stageId).select('id').single()
+      : supabase.from('curriculum_stages').insert({ ...payload, created_by: session.user.id }).select('id').single();
+    const { data, error } = await request;
+    submitButton.disabled = false;
+    if (error) return showStatus(error.message, true);
+    resetCurriculumStageForm();
+    document.querySelector('#curriculumStageForm').closest('details').open = false;
+    await loadCurriculum(data.id);
+    showStatus(`Curriculum stage ${stageId ? 'updated' : 'created'}.`);
+  });
+  document.querySelector('#cancelCurriculumStageEdit').addEventListener('click', resetCurriculumStageForm);
+  document.querySelector('#curriculumSessionForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const stageId = document.querySelector('#curriculumStageSelect').value;
+    if (!stageId) return showStatus('Choose a curriculum stage first.', true);
+    const sessionId = document.querySelector('#curriculumSessionId').value;
+    const payload = {
+      stage_id: stageId,
+      session_order: Number(document.querySelector('#curriculumSessionOrder').value),
+      session_label: document.querySelector('#curriculumSessionLabel').value.trim(),
+      topic: document.querySelector('#curriculumTopic').value.trim(),
+      objectives: document.querySelector('#curriculumObjectives').value.trim(),
+      updated_at: new Date().toISOString(),
+      updated_by: session.user.id,
+    };
+    const submitButton = event.currentTarget.querySelector('[type="submit"]');
+    submitButton.disabled = true;
+    const request = sessionId
+      ? supabase.from('curriculum_sessions').update(payload).eq('id', sessionId).select('id').single()
+      : supabase.from('curriculum_sessions').insert({ ...payload, created_by: session.user.id }).select('id').single();
+    const { error } = await request;
+    submitButton.disabled = false;
+    if (error) return showStatus(error.message, true);
+    resetCurriculumSessionForm();
+    document.querySelector('#curriculumSessionEditor').open = false;
+    await loadCurriculum(stageId);
+    showStatus(`Curriculum session ${sessionId ? 'updated' : 'created'}.`);
+  });
+  document.querySelector('#cancelCurriculumSessionEdit').addEventListener('click', resetCurriculumSessionForm);
   document.querySelector('#studentForm').addEventListener('submit', async (event) => {
     event.preventDefault();
     const studentId = document.querySelector('#studentId').value;

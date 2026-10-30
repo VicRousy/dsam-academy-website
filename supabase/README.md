@@ -18,6 +18,10 @@ Run `classroom_operations.sql` after `classroom_delivery.sql` and `student_servi
 
 Run `content_storage.sql` after `learning_workspace.sql` to enable private uploads for course materials. It creates a private 50 MB-per-file storage bucket for PDFs, sheets, documents, images, audio, and videos. Approved staff can upload files; only active students in the matching programme can retrieve them.
 
+Run `curriculum_workspace.sql` after `admin_portal.sql` and `admin_operations.sql` to add the owner-provided practical teaching plans and staff application intake details. The migration seeds five stages and 44 session blocks from the piano and woodwind/strings/brass outlines. Approved staff can review and edit the stages and sessions in the Curriculum section. The application form fields are recorded from paper forms inside each application review; a recorded signature date does not replace the signed original. These tables are inaccessible to students and signed-out visitors. Re-running the script keeps staff edits to seeded records.
+
+The final result row should show at least five stages, at least 44 session blocks, `rls_enabled_on_private_tables = true`, and `anonymous_select_granted = false`. Existing custom stages or sessions may make the counts higher. Test staff and student accounts against the live portal before relying on the new role rules in production.
+
 It adds these protections:
 
 - Students can submit only one application per programme.
@@ -42,6 +46,7 @@ Run the existing files in this order:
 11. `classroom_delivery.sql`
 12. `classroom_operations.sql`
 13. `content_storage.sql`
+14. `curriculum_workspace.sql`
 
 Before the owner can use Admin Portal, they must sign in once with `dsamacademyofmusic@gmail.com`, then run `admin_portal.sql` again to assign the Admin role.
 

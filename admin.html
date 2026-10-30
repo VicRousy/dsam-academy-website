@@ -41,6 +41,7 @@
       <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
       <button class="admin-nav-button" type="button" data-panel="classroom">Classroom</button>
       <button class="admin-nav-button" type="button" data-panel="learning">Learning</button>
+      <button class="admin-nav-button" type="button" data-panel="curriculum">Curriculum</button>
       <button class="admin-nav-button" type="button" data-panel="services">Student services</button>
       <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
       <button class="admin-nav-button" type="button" data-panel="announcements" data-admin-only>Announcements</button>
@@ -56,6 +57,26 @@
       <section id="applicationDetails" class="application-details" hidden aria-labelledby="detailsTitle">
         <div class="details-heading"><div><p class="auth-kicker">APPLICATION DETAILS</p><h2 id="detailsTitle">Student application</h2></div><button id="closeDetails" class="details-close" type="button" aria-label="Close application details">×</button></div>
         <div id="detailsContent" class="details-content"></div>
+        <section class="intake-section" aria-labelledby="intakeTitle">
+          <h3 id="intakeTitle">Application form details</h3>
+          <p>Record details from the academy's paper application. The selected programme and student email are shown above.</p>
+          <p id="intakeStatus" class="form-hint" role="status" aria-live="polite"></p>
+          <form id="applicationIntakeForm" class="management-form" autocomplete="off">
+            <input id="intakeEnrollmentId" type="hidden">
+            <label>Surname<input id="intakeSurname" required maxlength="120"></label>
+            <label>First name<input id="intakeFirstName" required maxlength="120"></label>
+            <label>Middle name<input id="intakeMiddleName" maxlength="120"></label>
+            <label>Mobile contact<input id="intakePhone" type="tel" maxlength="40"></label>
+            <label class="form-wide">Address<textarea id="intakeAddress" rows="2" maxlength="500"></textarea></label>
+            <label>Study duration<input id="intakeDuration" maxlength="120" placeholder="As agreed with admissions"></label>
+            <label>Major instrument<input id="intakeMajorInstrument" maxlength="120"></label>
+            <label>Minor instrument<input id="intakeMinorInstrument" maxlength="120"></label>
+            <label>Grade level<input id="intakeGradeLevel" maxlength="80"></label>
+            <label>Paper form signature date<input id="intakeSignedOn" type="date"></label>
+            <p class="form-hint form-wide">Enter a signature date only when a signed paper form has been received. This field is not a digital signature.</p>
+            <div class="form-actions"><button type="submit">Save application details</button></div>
+          </form>
+        </section>
       </section>
       <section id="staffRequests" class="staff-requests" hidden>
         <div class="staff-requests-heading">
@@ -166,6 +187,32 @@
           <div id="progressList" class="management-list"></div>
         </div>
       </div>
+    </section>
+    <section id="curriculumPanel" class="admin-panel" hidden>
+      <div class="management-heading"><div><p class="auth-kicker">TEACHING PLANS</p><h2>Practical curriculum</h2></div><p>Owner-provided piano and instrumental outlines, organised by stage and session for the teaching team.</p></div>
+      <label class="curriculum-picker">Choose a stage<select id="curriculumStageSelect" aria-label="Curriculum stage"></select></label>
+      <div id="curriculumStageList" class="curriculum-stage-list"></div>
+      <details class="curriculum-editor"><summary id="curriculumStageEditorTitle">Add a curriculum stage</summary>
+        <form id="curriculumStageForm" class="management-form">
+          <input id="curriculumStageId" type="hidden">
+          <label>Instrument group<input id="curriculumTrackName" required minlength="3" maxlength="160" placeholder="Piano"></label>
+          <label>Stage name<input id="curriculumStageName" required minlength="3" maxlength="120" placeholder="Beginner"></label>
+          <label>Stage order<input id="curriculumStageOrder" type="number" required min="1" step="1" value="1"></label>
+          <div class="form-actions"><button type="submit">Save stage</button><button id="cancelCurriculumStageEdit" type="button" class="secondary-button">Clear</button></div>
+        </form>
+      </details>
+      <div class="curriculum-session-heading"><h3 id="curriculumSessionsTitle">Sessions</h3><p>Teaching topics and specific learning objectives</p></div>
+      <div id="curriculumSessionList" class="curriculum-session-list"></div>
+      <details class="curriculum-editor" id="curriculumSessionEditor"><summary id="curriculumSessionEditorTitle">Add a session</summary>
+        <form id="curriculumSessionForm" class="management-form">
+          <input id="curriculumSessionId" type="hidden">
+          <label>Order<input id="curriculumSessionOrder" type="number" required min="1" step="1"></label>
+          <label>Session label<input id="curriculumSessionLabel" required minlength="3" maxlength="80" placeholder="Session 1 or Sessions 6–8"></label>
+          <label class="form-wide">Topics<textarea id="curriculumTopic" rows="4" required minlength="3" maxlength="3000"></textarea></label>
+          <label class="form-wide">Specific objectives<textarea id="curriculumObjectives" rows="3" required minlength="3" maxlength="2000"></textarea></label>
+          <div class="form-actions"><button type="submit">Save session</button><button id="cancelCurriculumSessionEdit" type="button" class="secondary-button">Clear</button></div>
+        </form>
+      </details>
     </section>
     <section id="announcementsPanel" class="admin-panel" hidden>
       <div class="management-heading"><div><p class="auth-kicker">ACADEMY COMMUNICATION</p><h2>Student announcements</h2></div><p>Publish clear academy notices, timetable updates, events, and important reminders.</p></div>
