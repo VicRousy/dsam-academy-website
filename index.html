@@ -11,41 +11,50 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/styles/styles.css">
+    <link rel="stylesheet" href="./src/styles/home.css">
 </head>
-<body>
+<body class="site-home">
+    <svg class="icon-sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="icon-star" viewBox="0 0 24 24"><path fill="currentColor" d="m12 2.2 3.02 6.13 6.77.98-4.9 4.78 1.16 6.74L12 17.65l-6.05 3.18 1.16-6.74-4.9-4.78 6.77-.98L12 2.2Z"/></symbol>
+        <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="icon-laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2 20h20l-2-4H4l-2 4Z" fill="currentColor"/></symbol>
+        <symbol id="icon-graduation" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5L2 9Z" fill="currentColor"/><path d="M6 11.5V17c3.6 2.7 8.4 2.7 12 0v-5.5M22 9v7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="icon-location" viewBox="0 0 24 24"><path d="M12 22s7-7.1 7-13a7 7 0 1 0-14 0c0 5.9 7 13 7 13Z" fill="currentColor"/><circle cx="12" cy="9" r="2.6" fill="#36251b"/></symbol>
+        <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M6.6 2.8 3.4 5c-.8.6-1.1 1.6-.9 2.5 1.5 6.6 7.4 12.5 14 14 .9.2 1.9-.1 2.5-.9l2.2-3.2-5.4-3.5-2.2 2.2a14.7 14.7 0 0 1-6.1-6.1L9.1 8.2 6.6 2.8Z" fill="currentColor"/></symbol>
+        <symbol id="icon-envelope" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" fill="currentColor"/><path d="m3 6 9 7 9-7" fill="none" stroke="#36251b" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="icon-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.6" r="1.2" fill="currentColor"/></symbol>
+        <symbol id="icon-whatsapp" viewBox="0 0 24 24"><path d="M5 19.5 2.8 22l.8-4.1A9 9 0 1 1 5 19.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.3 7.5c-.5 0-.9.3-1.1.8-.6 1.4.2 3.3 1.9 5 1.7 1.7 3.6 2.5 5 1.9.5-.2.8-.6.8-1.1l-2.1-1.1-1.1 1.1a8.2 8.2 0 0 1-2.8-2.8l1.1-1.1-1.2-2.1Z" fill="currentColor"/></symbol>
+    </svg>
+    <a class="skip-link" href="#mainContent">Skip to content</a>
 
     <header>
-        <a class="brand-logo" href="#" aria-label="DSAM'S Academy of Music home"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
+        <a class="brand-logo" href="./index.html" aria-label="DSAM'S Academy of Music home"><img src="/assets/dsam-academy-logo.png" alt="DSAM'S Academy of Music" width="693" height="240"></a>
 
         <nav class="desktop-nav" aria-label="Main navigation">
             <div class="nav-group public-nav">
-                <a href="#" class="active">Home</a>
+                <a href="./index.html" class="active">Home</a>
                 <a href="#programs">Programs</a>
                 <a href="#estimator">Tuition Calculator</a>
                 <a href="#contact">Contact</a>
             </div>
-            <div class="nav-group portal-nav" aria-label="Portal access">
-                <a href="./auth.html" class="role-login role-student">Student</a>
-                <a href="./staff-login.html" class="role-login role-staff">Staff</a>
-                <a href="./admin-login.html" class="role-login role-admin">Admin</a>
-            </div>
+            <details class="portal-menu"><summary>Portals <span aria-hidden="true">⌄</span></summary><div class="portal-menu-links"><a href="./auth.html">Student</a><a href="./staff-login.html">Staff</a><a href="./admin-login.html">Admin</a></div></details>
             <button class="nav-btn" type="button" data-scroll="#contact">Enrol Today</button>
         </nav>
 
         <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false">
-            <i class="fa-solid fa-bars"></i>
+            <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-menu"></use></svg>
         </button>
     </header>
 
     <div class="mobile-nav-overlay" id="mobileOverlay"></div>
-    <nav class="mobile-nav" id="mobileNav" aria-hidden="true">
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" aria-hidden="true" inert>
         <button class="mobile-nav-close" id="menuClose" type="button" aria-label="Close menu">
-            <i class="fa-solid fa-xmark"></i>
+            <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg>
         </button>
-        <a href="#" data-close-menu>Home</a>
+        <a href="./index.html" data-close-menu>Home</a>
         <a href="#programs" data-close-menu>Programs</a>
         <a href="#estimator" data-close-menu>Tuition Calculator</a>
         <a href="#contact" data-close-menu>Contact</a>
@@ -56,12 +65,10 @@
         <button class="nav-btn" type="button" data-scroll="#contact" data-close-menu>Enrol Today</button>
     </nav>
 
-    <main>
+    <main id="mainContent">
         <section class="hero">
-                <div class="hero-content">
-                    <div class="tagline">
-                    <i class="fa-solid fa-star"></i><span>The Purest of Sounds for the Heart and Soul</span>
-                    </div>
+            <div class="hero-content">
+                <div class="tagline"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-star"></use></svg><span>The Purest of Sounds for the Heart and Soul</span></div>
                 <h1>Where Passion Meets <span>Mastery</span></h1>
                 <p>DSAM'S Academy of Music provides music education that develops skill, confidence, and pure musical expression — online and live.</p>
                 <div class="cta-group">
@@ -78,23 +85,27 @@
             </div>
 
             <div class="tab-container">
-                <button class="tab-btn active" data-filter="all" type="button">All Programmes</button>
-                <button class="tab-btn" data-filter="academic" type="button">Academic</button>
-                <button class="tab-btn" data-filter="practical" type="button">Practical</button>
+                <button class="tab-btn active" data-filter="all" type="button" aria-pressed="true">All Programmes</button>
+                <button class="tab-btn" data-filter="academic" type="button" aria-pressed="false">Academic</button>
+                <button class="tab-btn" data-filter="practical" type="button" aria-pressed="false">Practical</button>
             </div>
 
             <div class="grid-display">
                 <div class="course-card" data-category="academic">
                     <div class="card-img-holder">
                         <span class="card-badge">Academic</span>
-                        <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600" alt="Piano and music study">
+                        <img
+                            src="https://images.unsplash.com/photo-1755287078382-94c1ad66cf8e?auto=format&q=82&w=1200"
+                            srcset="https://images.unsplash.com/photo-1755287078382-94c1ad66cf8e?auto=format&q=82&w=480 480w, https://images.unsplash.com/photo-1755287078382-94c1ad66cf8e?auto=format&q=82&w=800 800w, https://images.unsplash.com/photo-1755287078382-94c1ad66cf8e?auto=format&q=82&w=1200 1200w, https://images.unsplash.com/photo-1755287078382-94c1ad66cf8e?auto=format&q=82&w=1600 1600w"
+                            sizes="(max-width: 560px) 90vw, (max-width: 1000px) 42vw, (max-width: 1500px) 28vw, 410px"
+                            alt="Piano and music study" loading="lazy" decoding="async">
                     </div>
                     <div class="card-body">
                         <h3>Music Theory Grades 1-6</h3>
                         <p>Build the musical literacy, listening, notation, and harmony foundation needed for confident performance and study.</p>
                         <div class="card-meta">
-                            <div class="meta-item"><i class="fa-solid fa-laptop"></i> Online & Live</div>
-                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> Ages 12+</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-laptop"></use></svg> Online & Live</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-graduation"></use></svg> Ages 12+</div>
                         </div>
                     </div>
                 </div>
@@ -102,14 +113,18 @@
                 <div class="course-card" data-category="practical">
                     <div class="card-img-holder">
                         <span class="card-badge">Practical</span>
-                        <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600" alt="Piano Studio">
+                        <img
+                            src="https://images.unsplash.com/photo-1621368286550-f54551f39b91?auto=format&q=82&w=1200"
+                            srcset="https://images.unsplash.com/photo-1621368286550-f54551f39b91?auto=format&q=82&w=480 480w, https://images.unsplash.com/photo-1621368286550-f54551f39b91?auto=format&q=82&w=800 800w, https://images.unsplash.com/photo-1621368286550-f54551f39b91?auto=format&q=82&w=1200 1200w, https://images.unsplash.com/photo-1621368286550-f54551f39b91?auto=format&q=82&w=1600 1600w"
+                            sizes="(max-width: 560px) 90vw, (max-width: 1000px) 42vw, (max-width: 1500px) 28vw, 410px"
+                            alt="Violinist practising with sheet music" loading="lazy" decoding="async">
                     </div>
                     <div class="card-body">
                         <h3>Music Practicals 1-4</h3>
                         <p>Develop practical musicianship through guided instrumental work, repertoire, technique, and performance practice.</p>
                         <div class="card-meta">
-                            <div class="meta-item"><i class="fa-solid fa-laptop"></i> Online & Live</div>
-                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> Ages 7+</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-laptop"></use></svg> Online & Live</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-graduation"></use></svg> Ages 7+</div>
                         </div>
                     </div>
                 </div>
@@ -117,14 +132,18 @@
                 <div class="course-card" data-category="academic">
                     <div class="card-img-holder">
                         <span class="card-badge">Professional</span>
-                        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=600" alt="Guitar Class">
+                        <img
+                            src="https://images.unsplash.com/photo-1471478331149-c72f17e33c73?auto=format&q=82&w=1200"
+                            srcset="https://images.unsplash.com/photo-1471478331149-c72f17e33c73?auto=format&q=82&w=480 480w, https://images.unsplash.com/photo-1471478331149-c72f17e33c73?auto=format&q=82&w=800 800w, https://images.unsplash.com/photo-1471478331149-c72f17e33c73?auto=format&q=82&w=1200 1200w, https://images.unsplash.com/photo-1471478331149-c72f17e33c73?auto=format&q=82&w=1600 1600w"
+                            sizes="(max-width: 560px) 90vw, (max-width: 1000px) 42vw, (max-width: 1500px) 28vw, 410px"
+                            alt="Guitarist playing acoustic guitar" loading="lazy" decoding="async">
                     </div>
                     <div class="card-body">
                         <h3>Diploma in Music</h3>
                         <p>An advanced programme for committed musicians seeking broader theory, practice, and professional development.</p>
                         <div class="card-meta">
-                            <div class="meta-item"><i class="fa-solid fa-laptop"></i> Online & Live</div>
-                            <div class="meta-item"><i class="fa-solid fa-graduation-cap"></i> Ages 18+</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-laptop"></use></svg> Online & Live</div>
+                            <div class="meta-item"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-graduation"></use></svg> Ages 18+</div>
                         </div>
                     </div>
                 </div>
@@ -157,18 +176,18 @@
             <div class="calc-box">
                 <div class="calc-inputs">
                     <div class="form-group">
-                        <label>Weekly Class Duration <span class="calc-value-display" id="hourLabel">2 Hours</span></label>
+                        <label for="hourSlider">Weekly Class Duration <span class="calc-value-display" id="hourLabel">2 Hours</span></label>
                         <input type="range" min="1" max="8" value="2" class="custom-slider" id="hourSlider">
                     </div>
                     <div class="form-group">
-                        <label>Planned Enrollment Term <span class="calc-value-display" id="monthLabel">3 Months</span></label>
+                        <label for="monthSlider">Planned Enrollment Term <span class="calc-value-display" id="monthLabel">3 Months</span></label>
                         <input type="range" min="1" max="12" value="3" class="custom-slider" id="monthSlider">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label style="margin-bottom: 15px;">Include Private Studio Masterclasses?</label>
+                        <p class="calc-question">Include Private Studio Masterclasses?</p>
                         <div style="display: flex; gap: 15px;">
-                            <button class="tab-btn active" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsYes" type="button">Yes</button>
-                            <button class="tab-btn" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsNo" type="button">No</button>
+                            <button class="tab-btn active" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsYes" type="button" aria-pressed="true">Yes</button>
+                            <button class="tab-btn" style="padding: 8px 20px; font-size: 0.85rem;" id="addonsNo" type="button" aria-pressed="false">No</button>
                         </div>
                     </div>
                 </div>
@@ -199,7 +218,7 @@
                     <p class="info-desc">Learn online or live with DSAM'S Academy of Music. Contact our admissions team to discuss the right programme for you.</p>
 
                     <div class="contact-item">
-                        <div class="icon-circle"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="icon-circle" aria-hidden="true"><svg class="ui-icon"><use href="#icon-location"></use></svg></div>
                         <div>
                             <h4 style="font-weight:600">Ikorodu Campus</h4>
                             <a class="contact-action" href="https://www.google.com/maps/search/?api=1&amp;query=13+Temidayo+Street+New+Era+Estate+Ikorodu+Lagos" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
@@ -207,7 +226,7 @@
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="icon-circle"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="icon-circle" aria-hidden="true"><svg class="ui-icon"><use href="#icon-location"></use></svg></div>
                         <div>
                             <h4 style="font-weight:600">Yaba Campus</h4>
                             <a class="contact-action" href="https://www.google.com/maps/search/?api=1&amp;query=7+Iwaya+Road+Onike+Yaba+Lagos" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
@@ -215,7 +234,7 @@
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="icon-circle"><i class="fa-solid fa-phone"></i></div>
+                        <div class="icon-circle" aria-hidden="true"><svg class="ui-icon"><use href="#icon-phone"></use></svg></div>
                         <div>
                             <h4 style="font-weight:600">Admissions & WhatsApp</h4>
                             <a class="contact-action" href="tel:+2348058102733">Call admissions</a>
@@ -224,7 +243,7 @@
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="icon-circle"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="icon-circle" aria-hidden="true"><svg class="ui-icon"><use href="#icon-envelope"></use></svg></div>
                         <div>
                             <h4 style="font-weight:600">Email Admissions</h4>
                             <a class="contact-action" data-academy-email href="mailto:dsamacademyofmusic@gmail.com">dsamacademyofmusic@gmail.com</a>
@@ -239,29 +258,29 @@
                             <label>Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
                         </div>
                         <div class="form-row">
-                            <input type="text" class="input-style" name="firstName" placeholder="First Name" required>
-                            <input type="text" class="input-style" name="lastName" placeholder="Last Name" required>
+                            <label class="form-field">First Name<input type="text" class="input-style" name="firstName" autocomplete="given-name" required></label>
+                            <label class="form-field">Last Name<input type="text" class="input-style" name="lastName" autocomplete="family-name" required></label>
                         </div>
                         <div class="form-row">
-                            <input type="email" class="input-style" name="email" placeholder="Email Address" required>
-                            <input type="tel" class="input-style" name="phone" placeholder="Phone Number">
+                            <label class="form-field">Email Address<input type="email" class="input-style" name="email" autocomplete="email" required></label>
+                            <label class="form-field">Phone Number<input type="tel" class="input-style" name="phone" autocomplete="tel"></label>
                         </div>
                         <div class="form-row">
-                            <select class="input-style" name="ageGroup" required>
+                            <label class="form-field">Student Age Group<select class="input-style" name="ageGroup" required>
                                 <option value="" disabled selected>Student Age Group...</option>
                                 <option value="child">Child (under 13)</option>
                                 <option value="teen">Teen (13–17)</option>
                                 <option value="adult">Adult (18+)</option>
-                            </select>
-                            <select class="input-style" name="lessonFormat" required>
+                            </select></label>
+                            <label class="form-field">Preferred Lesson Format<select class="input-style" name="lessonFormat" required>
                                 <option value="" disabled selected>Preferred Lesson Format...</option>
                                 <option value="in-person">In-person lessons</option>
                                 <option value="online">Online lessons</option>
                                 <option value="either">Either option</option>
-                            </select>
+                            </select></label>
                         </div>
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <select class="input-style" name="track" style="background: rgba(7,7,10,0.9);" required>
+                            <label class="form-field">Primary Study Track<select class="input-style" name="track" required>
                                 <option value="">Select Primary Study Track...</option>
                                 <option value="Music Theory Grades 1-6">Music Theory Grades 1-6</option>
                                 <option value="Music Practicals 1-4">Music Practicals 1-4</option>
@@ -278,7 +297,7 @@
                                 <option value="African Jazz Cruze">African Jazz Cruze</option>
                                 <option value="Western Jazz Cruze">Western Jazz Cruze</option>
                                 <option value="Studio Management">Studio Management</option>
-                            </select>
+                            </select></label>
                         </div>
                         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
                         <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%; border-radius: 12px; padding: 18px;">Submit Formal Enrollment Application</button>
@@ -292,9 +311,8 @@
     <footer>
         <p>&copy; 2026 DSAM'S Academy of Music.</p>
         <div class="social-row">
-            <a href="https://instagram.com/d.samacademy" class="social-icon" target="_blank" rel="noopener noreferrer" aria-label="DSAM'S Academy on Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
-            <a href="#" class="social-icon"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://instagram.com/d.samacademy" class="social-icon" target="_blank" rel="noopener noreferrer" aria-label="DSAM'S Academy on Instagram"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-instagram"></use></svg></a>
+            <a href="https://wa.me/2348058102733" class="social-icon" target="_blank" rel="noopener noreferrer" aria-label="Message DSAM'S Academy on WhatsApp"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-whatsapp"></use></svg></a>
         </div>
     </footer>
 

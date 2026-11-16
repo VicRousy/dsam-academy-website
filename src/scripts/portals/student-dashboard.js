@@ -37,26 +37,50 @@ if (!session) {
   const markNotificationsRead = document.querySelector('#markNotificationsRead');
   const classroomLiveList = document.querySelector('#classroomLiveList');
   const classroomRecordingList = document.querySelector('#classroomRecordingList');
+  const applicationAction = document.querySelector('#applicationAction');
   const studentMenuToggle = document.querySelector('#studentMenuToggle');
   const studentSidebar = document.querySelector('#studentSidebar');
   const studentPanels = document.querySelectorAll('.student-panel');
   const studentPanelButtons = document.querySelectorAll('[data-student-panel]');
 
-  const showStudentPanel = (panelName) => {
-    studentPanels.forEach((panel) => { panel.hidden = panel.id !== `${panelName}StudentPanel`; });
+  const showStudentPanel = (panelName, moveFocus = false) => {
+    const activePanel = document.getElementById(`${panelName}StudentPanel`);
+    const wasMenuOpen = studentSidebar.classList.contains('is-open');
+    studentPanels.forEach((panel) => { panel.hidden = panel !== activePanel; });
     studentPanelButtons.forEach((button) => {
       const active = button.dataset.studentPanel === panelName;
       button.classList.toggle('active', active);
-      button.setAttribute('aria-current', active ? 'page' : 'false');
+      button.setAttribute('aria-pressed', String(active));
     });
     studentSidebar.classList.remove('is-open');
     studentMenuToggle.setAttribute('aria-expanded', 'false');
+    if (wasMenuOpen || moveFocus) {
+      activePanel.setAttribute('tabindex', '-1');
+      activePanel.focus();
+    }
   };
 
   studentPanelButtons.forEach((button) => button.addEventListener('click', () => showStudentPanel(button.dataset.studentPanel)));
+  applicationAction.addEventListener('click', (event) => {
+    if (applicationAction.dataset.panel !== 'classroom') return;
+    event.preventDefault();
+    showStudentPanel('classroom', true);
+  });
   studentMenuToggle.addEventListener('click', () => {
     const isOpen = studentSidebar.classList.toggle('is-open');
     studentMenuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  studentSidebar.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !studentSidebar.classList.contains('is-open')) return;
+    studentSidebar.classList.remove('is-open');
+    studentMenuToggle.setAttribute('aria-expanded', 'false');
+    studentMenuToggle.focus();
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      studentSidebar.classList.remove('is-open');
+      studentMenuToggle.setAttribute('aria-expanded', 'false');
+    }
   });
 
   document.querySelector('#studentName').textContent = `Welcome, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
@@ -123,6 +147,12 @@ if (!session) {
     const approvedCount = enrolments.filter((enrolment) => enrolment.status === 'active').length;
     document.querySelector('#courseName').textContent = latestEnrolment.courses?.title || 'Programme application';
     document.querySelector('#courseDetail').textContent = applicationDetails[latestEnrolment.status] || applicationDetails.pending;
+    applicationAction.hidden = latestEnrolment.status !== 'active';
+    if (latestEnrolment.status === 'active') {
+      applicationAction.textContent = 'Open classroom →';
+      applicationAction.href = '#classroomStudentPanel';
+      applicationAction.dataset.panel = 'classroom';
+    }
     enrollmentSummary.textContent = `${enrolments.length} application${enrolments.length === 1 ? '' : 's'} submitted · ${approvedCount} approved`;
     enrollmentList.innerHTML = enrolments.map((enrolment) => `<article class="enrollment-row"><div><strong>${escapeHtml(enrolment.courses?.title || 'Programme application')}</strong><span>Submitted ${formatDate(enrolment.created_at)}</span></div><span class="enrollment-status ${escapeHtml(enrolment.status)}">${escapeHtml(statusLabels[enrolment.status] || 'Pending')}</span></article>`).join('');
   }

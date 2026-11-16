@@ -1,0 +1,279 @@
+.auth-page {
+  --bg-dark: #1e1510;
+  --bg-surface: #2b1e17;
+  --accent-gold: #ef9b5b;
+  --text-primary: #fff9f1;
+  --text-secondary: #d0bdad;
+  --border-glass: #67503f;
+  --gradient-gold: linear-gradient(135deg, #d47736, #b85b25);
+  background: radial-gradient(circle at 8% 15%, #fffaf2, #f4eee5 52%, #e8dbcd);
+  color: var(--text-primary);
+}
+
+.portal-page {
+  --bg-dark: #f6f1e9;
+  --bg-surface: #fffcf8;
+  --accent-gold: #a84f1e;
+  --text-primary: #2b211b;
+  --text-secondary: #685b50;
+  --border-glass: #dbcebf;
+  --gradient-gold: linear-gradient(135deg, #bb622a, #9e481a);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+}
+.portal-page h1,
+.portal-page h2,
+.portal-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.auth-page .auth-shell { width: min(100% - 32px, 500px); }
+.auth-page .auth-logo { margin-bottom: 24px; }
+.auth-page .auth-logo img { width: 190px; max-width: 65vw; }
+.auth-page .auth-card {
+  padding: 40px;
+  border: 1px solid #604634;
+  border-top: 4px solid #c66c32;
+  border-radius: 4px;
+  background: #241812;
+  box-shadow: 0 24px 60px rgba(44, 29, 19, .14);
+}
+.auth-page .auth-card h1 {
+  margin: 12px 0 10px;
+  color: #fffaf3;
+  font: 600 clamp(2.7rem, 6vw, 3.65rem)/.95 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.035em;
+}
+.auth-page .auth-kicker,
+.portal-page .auth-kicker,
+.portal-page .card-label { color: var(--accent-gold) !important; letter-spacing: .16em; }
+.auth-page .auth-copy { color: #d8c8b9; font-size: .9375rem; line-height: 1.7; }
+.auth-page .auth-back { margin-bottom: 30px; color: #e9ab7d; font-size: .9375rem; }
+.auth-page .auth-back:hover { color: #fffaf3; }
+.auth-page .auth-choice {
+  padding: 18px 16px;
+  border-color: #604634;
+  border-radius: 4px;
+  background: #302119;
+}
+.auth-page .auth-choice:hover,
+.auth-page .auth-choice:focus-visible {
+  border-color: #ef9b5b;
+  background: #3b281c;
+  transform: none;
+}
+.auth-page .auth-choice strong { color: #fffaf3; font-size: .94rem; }
+.auth-page .auth-choice span { color: #d0bdad; font-size: .9rem; }
+.auth-page .auth-card label { font-size: .875rem; }
+.auth-page .auth-switch-copy { font-size: .9375rem; }
+.auth-page .auth-divider::before,
+.auth-page .auth-divider::after { background: #67503f; }
+.auth-page .auth-card input {
+  border-color: #77604f;
+  border-radius: 4px;
+  background: #1a110e;
+}
+.auth-page .auth-card input:focus { border-color: #ef9b5b; box-shadow: 0 0 0 2px rgba(239, 155, 91, .25); }
+.auth-page .google-button { border-radius: 4px; }
+.auth-page .auth-card .btn-primary,
+.auth-page .auth-mode-button.active {
+  border-radius: 4px;
+  background: #bb622a;
+  color: #fff;
+  box-shadow: none;
+}
+.auth-page .auth-card .btn-primary:hover:not(:disabled) { background: #d47736; box-shadow: none; }
+.auth-page .auth-mode-switch { border-color: #67503f; border-radius: 5px; background: #1a110e; }
+.auth-page .auth-mode-button { border-radius: 3px; }
+.auth-page .auth-status.error { color: #ffaaa0; }
+
+.portal-page .portal-shell { padding-top: 26px; }
+.portal-page .portal-header {
+  min-height: 86px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 4px;
+  background: #1e1510;
+}
+.portal-page .portal-header .brand-logo img { width: 166px; max-width: 44vw; }
+.portal-page .portal-header .portal-type { color: #efa36d; }
+.portal-page .portal-header .portal-home { color: #e2d4c6; }
+.portal-page .portal-header .portal-home:hover { color: #fffaf3; }
+.portal-page .portal-header .portal-signout {
+  padding: 9px 13px;
+  border-color: #866750;
+  border-radius: 4px;
+  color: #fffaf3;
+}
+.portal-page .portal-header .portal-signout:hover { border-color: #efa36d; background: #38271e; }
+.portal-page .portal-welcome { padding: 44px 0 32px; }
+.portal-page .portal-welcome h1 {
+  max-width: 900px;
+  margin: 10px 0 13px;
+  color: #2b211b;
+  font: 600 clamp(2.8rem, 5vw, 4.65rem)/.98 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.04em;
+  overflow-wrap: break-word;
+}
+.portal-page .portal-welcome p:last-child { max-width: 700px; font-size: .91rem; }
+
+.portal-page .admin-navigation,
+.portal-page .student-sidebar {
+  border-color: #4b382b;
+  border-radius: 4px;
+  background: #291c15;
+}
+.portal-page .admin-nav-group + .admin-nav-group { border-color: #594438; }
+.portal-page .admin-nav-heading { color: #d3b79c; }
+.portal-page .admin-nav-button,
+.portal-page .student-nav-button { border-radius: 3px; color: #eee0d2; font-size: .9375rem; }
+.portal-page .admin-nav-button:hover,
+.portal-page .admin-nav-button:focus-visible,
+.portal-page .admin-nav-button.active,
+.portal-page .student-nav-button:hover,
+.portal-page .student-nav-button:focus-visible,
+.portal-page .student-nav-button.active {
+  border-color: #b7794b;
+  background: #57351f;
+  color: #fffaf3;
+}
+.portal-page .student-nav-button:focus-visible { outline-color: #efa36d; }
+.portal-page .admin-menu-toggle,
+.portal-page .student-menu-toggle {
+  border-color: #4b382b;
+  border-radius: 4px;
+  background: #291c15;
+  color: #fffaf3;
+}
+.portal-page .admin-menu-toggle span,
+.portal-page .student-menu-toggle span { color: #efa36d; }
+
+.portal-page .dashboard-card,
+.portal-page .admin-metric,
+.portal-page .admin-workspace,
+.portal-page .management-form,
+.portal-page .management-card,
+.portal-page .staff-requests,
+.portal-page .application-details,
+.portal-page .curriculum-session-card {
+  border: 1px solid var(--border-glass);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  box-shadow: none;
+}
+.portal-page .admin-metric { padding: 18px 20px; }
+.portal-page .admin-metric strong { color: var(--text-primary); font: 700 2rem 'Plus Jakarta Sans', sans-serif; }
+.portal-page .admin-metric .card-label { color: var(--accent-gold) !important; }
+.portal-page .admin-metric span { font-size: .875rem; }
+.portal-page .application-card,
+.portal-page.admin-portal-page .application-card {
+  border-color: var(--border-glass);
+  border-radius: 4px;
+  background: #fffaf3;
+}
+.portal-page .management-heading h2,
+.portal-page .details-heading h2,
+.portal-page .staff-requests-heading h2,
+.portal-page .student-section-heading h2,
+.portal-page .curriculum-session-heading h3 {
+  color: var(--text-primary);
+  font: 600 clamp(1.8rem, 2.6vw, 2.35rem)/1 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -.02em;
+}
+.portal-page .dashboard-card h2 { color: var(--text-primary); }
+.portal-page .management-subheading { color: var(--text-primary); font: 700 1rem 'Plus Jakarta Sans', sans-serif; }
+.portal-page .management-form,
+.portal-page .student-service-form { background: #fbf6ef; }
+.portal-page .admin-search,
+.portal-page .admin-filter,
+.portal-page .management-form label,
+.portal-page .student-service-form label { font-size: .875rem; }
+.portal-page .learning-entry,
+.portal-page .announcement-entry,
+.portal-page .notification-entry { border-radius: 4px; background: #fbf6ef; }
+.portal-page .notification-entry.unread { border-color: #bf8b67; background: #fff2e5; }
+.portal-page .student-support-card { border-color: #caa483; border-radius: 4px; background: #fff3e5; }
+.portal-page .student-support-card h2 { color: var(--text-primary); }
+.portal-page .details-grid div { border-radius: 3px; }
+
+.portal-page .admin-search input,
+.portal-page .admin-filter select,
+.portal-page .management-form input,
+.portal-page .management-form select,
+.portal-page .management-form textarea,
+.portal-page .student-profile-form input,
+.portal-page .student-service-form input,
+.portal-page .student-service-form select,
+.portal-page .student-service-form textarea,
+.portal-page .lesson-attendance select,
+.portal-page .curriculum-picker select {
+  border: 1px solid #cbbbaa;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--text-primary);
+  color-scheme: light;
+}
+.portal-page input::placeholder,
+.portal-page textarea::placeholder { color: #82756a; opacity: 1; }
+.portal-page input:focus-visible,
+.portal-page select:focus-visible,
+.portal-page textarea:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 1px; }
+.portal-page .student-profile-form input:disabled { background: #f1e9df; color: #6f6257; }
+.portal-page .form-actions button,
+.portal-page .student-form-actions button,
+.portal-page .student-service-form button {
+  border-color: #a84f1e;
+  border-radius: 4px;
+  background: #a84f1e;
+  color: #fff;
+}
+.portal-page .form-actions button:hover:not(:disabled),
+.portal-page .student-form-actions button:hover:not(:disabled),
+.portal-page .student-service-form button:hover:not(:disabled) { background: #873a11; }
+.portal-page .form-actions .secondary-button,
+.portal-page .details-button {
+  border-color: #b89e89;
+  border-radius: 4px;
+  background: transparent;
+  color: #703c20;
+}
+.portal-page .dashboard-link { color: #9e481a; }
+.portal-page .dashboard-link:hover,
+.portal-page .dashboard-link:focus-visible { text-decoration: underline; }
+.portal-page .application-actions button { border-radius: 4px; }
+.portal-page .enrollment-status.active,
+.portal-page .payment-status.paid,
+.portal-page .service-badge.approved,
+.portal-page .service-badge.resolved,
+.portal-page .service-badge.reviewed,
+.portal-page .profile-status.success,
+.portal-page .service-status.success { color: #1f7047 !important; border-color: #1f7047; }
+.portal-page .enrollment-status.declined,
+.portal-page .service-badge.declined,
+.portal-page .service-badge.returned,
+.portal-page .profile-status.error,
+.portal-page .service-status.error { color: #a42e2b !important; border-color: #a42e2b; }
+.portal-page .enrollment-status.pending,
+.portal-page .payment-status.pending,
+.portal-page .service-badge.pending,
+.portal-page .service-badge.open,
+.portal-page .service-badge.submitted { color: #a84f1e !important; border-color: #a84f1e; }
+.portal-page .portal-signout:focus-visible,
+.portal-page .admin-nav-button:focus-visible,
+.portal-page .student-nav-button:focus-visible { outline: 2px solid #efa36d; outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  .portal-page .admin-shell { display: flex; flex-direction: column; align-items: stretch; }
+  .portal-page .admin-shell > .portal-header { order: -3; }
+  .portal-page .admin-shell > .portal-welcome { order: -2; }
+  .portal-page .admin-shell > .admin-status { order: -1; }
+  .portal-page .admin-shell > .admin-metrics { order: 1; }
+  .portal-page .admin-shell > .admin-panel { order: 2; }
+}
+
+@media (max-width: 600px) {
+  .auth-page .auth-card { padding: 28px 22px; }
+  .portal-page .portal-shell { padding: 14px 14px 50px; }
+  .portal-page .portal-header { padding: 13px 15px; }
+  .portal-page .portal-header .brand-logo img { width: 154px; }
+  .portal-page .portal-welcome { padding: 30px 0 24px; }
+  .portal-page .portal-welcome h1 { font-size: clamp(2.45rem, 10vw, 3.25rem); }
+}

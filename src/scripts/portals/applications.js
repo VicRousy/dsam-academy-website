@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 const status = document.querySelector('#adminStatus');
+const adminMenuToggle = document.querySelector('#adminMenuToggle');
+const adminNavigation = document.querySelector('#adminNavigation');
 const list = document.querySelector('#applicationList');
 const portalKicker = document.querySelector('#portalKicker');
 const portalRole = document.querySelector('#portalRole');
@@ -30,6 +32,8 @@ let classroomSessions = [];
 let classroomAccessStats = new Map();
 let isAdmin = false;
 let pendingStaffCount = 0;
+let applicationsLoaded = false;
+let staffRequestsLoaded = false;
 const materialBucket = 'academy-materials';
 const maxMaterialFileSize = 50 * 1024 * 1024;
 const supportedMaterialExtensions = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'mp3', 'wav', 'm4a', 'mp4', 'mov']);
@@ -39,10 +43,30 @@ const showStatus = (message, error = false) => {
   status.className = error ? 'admin-status error' : 'admin-status';
 };
 
+const closeAdminMenu = () => {
+  adminNavigation.classList.remove('is-open');
+  adminMenuToggle.setAttribute('aria-expanded', 'false');
+};
+
 const showPanel = async (panelName) => {
-  document.querySelectorAll('.admin-panel').forEach((panel) => { panel.hidden = panel.id !== `${panelName}Panel`; });
-  document.querySelectorAll('.admin-nav-button').forEach((button) => { button.classList.toggle('active', button.dataset.panel === panelName); });
+  const activePanel = document.getElementById(`${panelName}Panel`);
+  const wasMenuOpen = adminNavigation.classList.contains('is-open');
+  document.querySelectorAll('.admin-panel').forEach((panel) => { panel.hidden = panel !== activePanel; });
+  document.querySelectorAll('.admin-nav-button').forEach((button) => {
+    const active = button.dataset.panel === panelName;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  closeAdminMenu();
+  if (wasMenuOpen) {
+    activePanel.setAttribute('tabindex', '-1');
+    activePanel.focus();
+  }
   if (panelName === 'students') renderStudents();
+  if (panelName === 'staffAccess') {
+    await loadStaffRequests();
+    updateMetrics();
+  }
   if (panelName === 'courses') await loadCourses();
   if (panelName === 'lessons') await loadLessons();
   if (panelName === 'classroom') await loadClassroom();
@@ -54,10 +78,10 @@ const showPanel = async (panelName) => {
 };
 
 const updateMetrics = () => {
-  document.querySelector('#totalApplications').textContent = applications.length;
-  document.querySelector('#pendingApplications').textContent = applications.filter((application) => application.status === 'pending').length;
-  document.querySelector('#activeStudents').textContent = new Set(applications.filter((application) => application.status === 'active').map((application) => application.student_id)).size;
-  document.querySelector('#pendingStaffRequests').textContent = pendingStaffCount;
+  document.querySelector('#totalApplications').textContent = applicationsLoaded ? applications.length : '—';
+  document.querySelector('#pendingApplications').textContent = applicationsLoaded ? applications.filter((application) => application.status === 'pending').length : '—';
+  document.querySelector('#activeStudents').textContent = applicationsLoaded ? new Set(applications.filter((application) => application.status === 'active').map((application) => application.student_id)).size : '—';
+  document.querySelector('#pendingStaffRequests').textContent = staffRequestsLoaded ? pendingStaffCount : '—';
 };
 
 const filteredApplications = () => {
@@ -154,9 +178,11 @@ const loadStaffRequests = async () => {
   staffRequests.hidden = false;
   const { data: requests = [], error } = await supabase.from('staff_access_requests').select('id,email,requested_at').eq('status', 'pending').order('requested_at', { ascending: true });
   if (error) {
+    staffRequestsLoaded = false;
     staffRequestList.innerHTML = '<p class="admin-status error">Staff-access requests are not set up yet. Run the staff access SQL setup.</p>';
     return;
   }
+  staffRequestsLoaded = true;
   pendingStaffCount = requests.length;
   if (!requests.length) {
     staffRequestList.innerHTML = '<p class="staff-request-empty">No pending staff-access requests.</p>';
@@ -180,10 +206,12 @@ const loadStaffRequests = async () => {
 const loadApplications = async () => {
   const { data: rows, error } = await supabase.from('enrollments').select('id,student_id,status,created_at,courses(title)').order('created_at', { ascending: false });
   if (error) {
+    applicationsLoaded = false;
     showStatus(error.message, true);
     return;
   }
   applications = rows || [];
+  applicationsLoaded = true;
 };
 
 const renderStudentOptions = () => {
@@ -924,12 +952,29 @@ if (!session) {
     statusFilter.addEventListener('change', renderApplications);
     document.querySelector('#closeDetails').addEventListener('click', () => { details.hidden = true; });
     document.querySelectorAll('.admin-nav-button').forEach((button) => button.addEventListener('click', () => showPanel(button.dataset.panel)));
+    adminMenuToggle.addEventListener('click', () => {
+      const isOpen = adminNavigation.classList.toggle('is-open');
+      adminMenuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    adminNavigation.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !adminNavigation.classList.contains('is-open')) return;
+      closeAdminMenu();
+      adminMenuToggle.focus();
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeAdminMenu();
+    });
     bindForms();
     await loadApplications();
     await loadProfiles();
     await loadPrivateNotes();
     await loadStaffRequests();
     updateMetrics();
-    renderApplications();
+    document.querySelector('#adminMetrics').setAttribute('aria-busy', 'false');
+    if (applicationsLoaded) renderApplications();
+    else {
+      list.hidden = false;
+      list.innerHTML = '<p class="admin-status error">Applications could not be loaded. Please refresh or contact support.</p>';
+    }
   }
 }

@@ -9,13 +9,14 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./src/styles/styles.css">
+  <link rel="stylesheet" href="./src/styles/portal-theme.css">
 </head>
-<body class="portal-page">
+<body class="portal-page admin-portal-page">
   <main class="portal-shell admin-shell">
     <header class="portal-header">
-      <a class="auth-logo brand-logo" href="./index.html"><img src="/assets/dsam-academy-logo-4k.png" alt="DSAM'S Academy of Music"></a>
+      <a class="auth-logo brand-logo" href="./index.html"><img src="/assets/dsam-academy-logo.png" alt="DSAM'S Academy of Music" width="693" height="240"></a>
       <div class="portal-actions">
         <span id="portalRole" class="portal-type">ADMIN PORTAL</span>
         <a class="portal-home" href="./index.html">← Back to academy</a>
@@ -28,23 +29,34 @@
       <p id="portalDescription">Monitor applications, student activity, and staff access from one place.</p>
     </section>
     <div id="adminStatus" class="admin-status" role="status"></div>
-    <section class="admin-metrics" aria-label="Academy summary">
-      <article class="admin-metric"><p class="card-label">TOTAL APPLICATIONS</p><strong id="totalApplications">0</strong><span>All submitted applications</span></article>
-      <article class="admin-metric"><p class="card-label">PENDING REVIEW</p><strong id="pendingApplications">0</strong><span>Waiting for a decision</span></article>
-      <article class="admin-metric"><p class="card-label">ACTIVE STUDENTS</p><strong id="activeStudents">0</strong><span>Approved enrolments</span></article>
-      <article class="admin-metric"><p class="card-label">STAFF REQUESTS</p><strong id="pendingStaffRequests">0</strong><span>Waiting for approval</span></article>
+    <section id="adminMetrics" class="admin-metrics" aria-label="Academy summary" aria-busy="true">
+      <article class="admin-metric"><p class="card-label">TOTAL APPLICATIONS</p><strong id="totalApplications">—</strong><span>All submitted applications</span></article>
+      <article class="admin-metric"><p class="card-label">PENDING REVIEW</p><strong id="pendingApplications">—</strong><span>Waiting for a decision</span></article>
+      <article class="admin-metric"><p class="card-label">ACTIVE STUDENTS</p><strong id="activeStudents">—</strong><span>Approved enrolments</span></article>
+      <article class="admin-metric" data-admin-only><p class="card-label">STAFF REQUESTS</p><strong id="pendingStaffRequests">—</strong><span>Waiting for approval</span></article>
     </section>
-    <nav class="admin-navigation" aria-label="Portal sections">
-      <button class="admin-nav-button active" type="button" data-panel="applications">Applications</button>
-      <button class="admin-nav-button" type="button" data-panel="students">Students</button>
-      <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only>Courses</button>
-      <button class="admin-nav-button" type="button" data-panel="lessons">Lessons</button>
-      <button class="admin-nav-button" type="button" data-panel="classroom">Classroom</button>
-      <button class="admin-nav-button" type="button" data-panel="learning">Learning</button>
-      <button class="admin-nav-button" type="button" data-panel="curriculum">Curriculum</button>
-      <button class="admin-nav-button" type="button" data-panel="services">Student services</button>
-      <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only>Payments</button>
-      <button class="admin-nav-button" type="button" data-panel="announcements" data-admin-only>Announcements</button>
+    <button id="adminMenuToggle" class="admin-menu-toggle" type="button" aria-controls="adminNavigation" aria-expanded="false">Browse management <span aria-hidden="true">☰</span></button>
+    <nav id="adminNavigation" class="admin-navigation" aria-label="Management sections">
+      <div class="admin-nav-group">
+        <p class="admin-nav-heading">Admissions</p>
+        <button class="admin-nav-button active" type="button" data-panel="applications" aria-controls="applicationsPanel" aria-pressed="true">Applications</button>
+        <button class="admin-nav-button" type="button" data-panel="students" aria-controls="studentsPanel" aria-pressed="false">Students</button>
+      </div>
+      <div class="admin-nav-group">
+        <p class="admin-nav-heading">Teaching</p>
+        <button class="admin-nav-button" type="button" data-panel="lessons" aria-controls="lessonsPanel" aria-pressed="false">Lessons</button>
+        <button class="admin-nav-button" type="button" data-panel="classroom" aria-controls="classroomPanel" aria-pressed="false">Classroom</button>
+        <button class="admin-nav-button" type="button" data-panel="learning" aria-controls="learningPanel" aria-pressed="false">Learning</button>
+        <button class="admin-nav-button" type="button" data-panel="curriculum" aria-controls="curriculumPanel" aria-pressed="false">Curriculum</button>
+        <button class="admin-nav-button" type="button" data-panel="services" aria-controls="servicesPanel" aria-pressed="false">Student services</button>
+      </div>
+      <div class="admin-nav-group" data-admin-only>
+        <p class="admin-nav-heading">Academy</p>
+        <button class="admin-nav-button" type="button" data-panel="staffAccess" data-admin-only aria-controls="staffAccessPanel" aria-pressed="false">Staff access</button>
+        <button class="admin-nav-button" type="button" data-panel="courses" data-admin-only aria-controls="coursesPanel" aria-pressed="false">Courses</button>
+        <button class="admin-nav-button" type="button" data-panel="payments" data-admin-only aria-controls="paymentsPanel" aria-pressed="false">Payments</button>
+        <button class="admin-nav-button" type="button" data-panel="announcements" data-admin-only aria-controls="announcementsPanel" aria-pressed="false">Announcements</button>
+      </div>
     </nav>
     <section id="applicationsPanel" class="admin-panel">
       <section class="admin-workspace">
@@ -52,7 +64,7 @@
         <label class="admin-search">Search applications<input id="applicationSearch" type="search" placeholder="Name, email, or programme" autocomplete="off"></label>
         <label class="admin-filter">Status<select id="applicationStatus"><option value="all">All statuses</option><option value="pending">Pending</option><option value="active">Approved</option><option value="declined">Declined</option></select></label>
       </div>
-        <section id="applicationList" class="application-list" hidden></section>
+        <section id="applicationList" class="application-list" aria-live="polite"><p class="admin-empty">Loading applications…</p></section>
       </section>
       <section id="applicationDetails" class="application-details" hidden aria-labelledby="detailsTitle">
         <div class="details-heading"><div><p class="auth-kicker">APPLICATION DETAILS</p><h2 id="detailsTitle">Student application</h2></div><button id="closeDetails" class="details-close" type="button" aria-label="Close application details">×</button></div>
@@ -78,12 +90,14 @@
           </form>
         </section>
       </section>
-      <section id="staffRequests" class="staff-requests" hidden>
+    </section>
+    <section id="staffAccessPanel" class="admin-panel" hidden data-admin-only>
+      <section id="staffRequests" class="staff-requests">
         <div class="staff-requests-heading">
           <div><p class="auth-kicker">STAFF ACCESS</p><h2>Pending staff requests</h2></div>
           <p>Approve only people the academy owner personally recognises.</p>
         </div>
-        <div id="staffRequestList" class="staff-request-list"></div>
+        <div id="staffRequestList" class="staff-request-list"><p class="staff-request-empty">Loading staff requests…</p></div>
       </section>
     </section>
     <section id="studentsPanel" class="admin-panel" hidden>
