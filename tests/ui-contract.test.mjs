@@ -87,9 +87,17 @@ test('all portal entry and workspace pages share the academy visual language', a
     assert.match(markup, /family=Cormorant\+Garamond/);
     assert.doesNotMatch(markup, /family=Syne/);
   }
+  for (const page of pages.slice(0, 6)) {
+    const markup = await read(page);
+    assert.match(markup, /<header class="auth-header">[\s\S]*?<a class="auth-back" href="[^"]+">[\s\S]*?<\/header>\s*<section class="auth-card">/);
+    assert.equal((markup.match(/class="auth-back"/g) || []).length, 1);
+  }
 
   const styles = await read('src/styles/portal-theme.css');
   assert.match(styles, /\.auth-page \{/);
+  assert.match(styles, /\.auth-page \.auth-shell \{ width: min\(100%, 1200px\)/);
+  assert.match(styles, /\.auth-page \.auth-header,\s*\.portal-page \.portal-header \{/);
+  assert.match(styles, /\.auth-page \.auth-card \{\s*width: min\(100%, 500px\)/);
   assert.match(styles, /\.portal-page \{/);
   assert.match(styles, /\.portal-page \.student-sidebar/);
   assert.match(styles, /\.portal-page \.admin-navigation/);

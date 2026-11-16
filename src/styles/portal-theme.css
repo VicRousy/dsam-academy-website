@@ -6,7 +6,8 @@
   --text-secondary: #d0bdad;
   --border-glass: #67503f;
   --gradient-gold: linear-gradient(135deg, #d47736, #b85b25);
-  background: radial-gradient(circle at 8% 15%, #fffaf2, #f4eee5 52%, #e8dbcd);
+  display: block;
+  background: #f6f1e9;
   color: var(--text-primary);
 }
 
@@ -25,10 +26,11 @@
 .portal-page h2,
 .portal-page h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-.auth-page .auth-shell { width: min(100% - 32px, 500px); }
-.auth-page .auth-logo { margin-bottom: 24px; }
-.auth-page .auth-logo img { width: 190px; max-width: 65vw; }
+.auth-page .auth-shell { width: min(100%, 1200px); margin: 0 auto; padding: 26px 24px 80px; }
+.auth-page .auth-logo { display: inline-flex; width: auto; margin: 0; }
 .auth-page .auth-card {
+  width: min(100%, 500px);
+  margin: clamp(32px, 5vw, 72px) auto 0;
   padding: 40px;
   border: 1px solid #604634;
   border-top: 4px solid #c66c32;
@@ -46,7 +48,7 @@
 .portal-page .auth-kicker,
 .portal-page .card-label { color: var(--accent-gold) !important; letter-spacing: .16em; }
 .auth-page .auth-copy { color: #d8c8b9; font-size: .9375rem; line-height: 1.7; }
-.auth-page .auth-back { margin-bottom: 30px; color: #e9ab7d; font-size: .9375rem; }
+.auth-page .auth-back { margin: 0; color: #e2d4c6; font-size: .9375rem; text-decoration: none; }
 .auth-page .auth-back:hover { color: #fffaf3; }
 .auth-page .auth-choice {
   padding: 18px 16px;
@@ -86,13 +88,19 @@
 .auth-page .auth-status.error { color: #ffaaa0; }
 
 .portal-page .portal-shell { padding-top: 26px; }
+.auth-page .auth-header,
 .portal-page .portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   min-height: 86px;
   padding: 14px 20px;
   border: 0;
   border-radius: 4px;
   background: #1e1510;
 }
+.auth-page .auth-header .brand-logo img,
 .portal-page .portal-header .brand-logo img { width: 166px; max-width: 44vw; }
 .portal-page .portal-header .portal-type { color: #efa36d; }
 .portal-page .portal-header .portal-home { color: #e2d4c6; }
@@ -270,7 +278,10 @@
 }
 
 @media (max-width: 600px) {
-  .auth-page .auth-card { padding: 28px 22px; }
+  .auth-page .auth-shell { padding: 14px 14px 50px; }
+  .auth-page .auth-header { flex-wrap: wrap; padding: 13px 15px; }
+  .auth-page .auth-header .brand-logo img { width: 154px; }
+  .auth-page .auth-card { margin-top: 24px; padding: 28px 22px; }
   .portal-page .portal-shell { padding: 14px 14px 50px; }
   .portal-page .portal-header { padding: 13px 15px; }
   .portal-page .portal-header .brand-logo img { width: 154px; }
