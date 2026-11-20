@@ -95,10 +95,13 @@ test('all portal entry and workspace pages share the academy visual language', a
 
   const styles = await read('src/styles/portal-theme.css');
   assert.match(styles, /\.auth-page \{/);
-  assert.match(styles, /\.auth-page \.auth-shell \{ width: min\(100%, 1200px\)/);
+  assert.match(styles, /\.auth-page \.auth-shell \{[\s\S]*?grid-template-columns: minmax\(0, \.94fr\) minmax\(0, 1\.06fr\)/);
+  assert.match(styles, /\.auth-page \.auth-shell::after \{[\s\S]*?grid-row: 2;/);
+  assert.match(styles, /@media \(max-width: 760px\) \{\s*\.auth-page \.auth-shell \{ grid-template-columns: 1fr;/);
   assert.match(styles, /\.auth-page \.auth-header,\s*\.portal-page \.portal-header \{/);
-  assert.match(styles, /\.auth-page \.auth-card \{\s*width: min\(100%, 500px\)/);
+  assert.match(styles, /\.auth-page \.auth-card \{[\s\S]*?width: 100%;/);
   assert.match(styles, /\.portal-page \{/);
+  assert.match(styles, /\.portal-page \.portal-welcome \{[\s\S]*?background: #291c15;/);
   assert.match(styles, /\.portal-page \.student-sidebar/);
   assert.match(styles, /\.portal-page \.admin-navigation/);
   assert.match(styles, /\.portal-page \.admin-shell > \.admin-metrics \{ order: 1; \}/);
@@ -112,6 +115,7 @@ test('management and student sections expose active state and responsive menus',
   const adminScript = await read('src/scripts/portals/applications.js');
   const studentScript = await read('src/scripts/portals/student-dashboard.js');
   const styles = await read('src/styles/styles.css');
+  const portalTheme = await read('src/styles/portal-theme.css');
 
   assert.match(admin, /id="adminMenuToggle"[^>]*aria-controls="adminNavigation"/);
   assert.match(admin, /id="adminNavigation"[^>]*aria-label="Management sections"/);
@@ -132,4 +136,9 @@ test('management and student sections expose active state and responsive menus',
   assert.match(studentScript, /showStudentPanel\('classroom', true\)/);
   assert.match(styles, /\.student-portal-page \.dashboard-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(styles, /\.student-portal-page \.dashboard-grid \.dashboard-card:first-child \{ grid-column:1\/-1; \}/);
+  assert.match(dashboard, /<div class="student-overview-details">\s*<section class="dashboard-card student-profile-card">[\s\S]*?<section class="dashboard-card enrollment-history">/);
+  assert.match(portalTheme, /grid-template-areas: "application lesson" "application payment"/);
+  assert.match(portalTheme, /\.student-portal-page \.student-overview-details \{[\s\S]*?grid-template-columns: minmax\(0, 1\.45fr\) minmax\(0, \.8fr\)/);
+  assert.match(portalTheme, /\.student-portal-page \.dashboard-grid #applicationAction\[hidden\] \{ display: none; \}/);
+  assert.match(portalTheme, /grid-template-areas: "application" "lesson" "payment"/);
 });
